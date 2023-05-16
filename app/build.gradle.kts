@@ -1,14 +1,16 @@
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
-    namespace = "com.example.Learn"
+    namespace = "com.example.learn"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.Learn"
+        applicationId = "com.example.learn"
         minSdk = 21
         targetSdk = 33
         versionCode = 1
@@ -66,6 +68,13 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
     debugImplementation("androidx.compose.ui:ui-tooling:${composeVersion}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${composeVersion}")
+
+    // Room
+    val room_version = "2.5.1"
+    implementation ("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+
 
     implementation("com.google.accompanist:accompanist-themeadapter-appcompat:0.30.0")
 

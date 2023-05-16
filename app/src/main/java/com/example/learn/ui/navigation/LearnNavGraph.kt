@@ -2,9 +2,11 @@ package com.example.learn.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.learn.SettingsScreen
 import com.example.learn.ui.card.CardScreen
 import com.example.learn.ui.deck.DeckDetailScreen
@@ -56,14 +58,20 @@ fun LearnNavGraph(
                 onUpdateDeck = { /*TODO*/ },
             )
         }
-        composable(LearnDestinations.DECK_DETAIL_ROUTE) {
+        composable(
+            route = LearnDestinations.DECK_DETAIL_ROUTE,
+            arguments = listOf(navArgument(DECK_ID_ARG) { type = NavType.StringType })
+        ) {
             DeckDetailScreen(
                 onNavigateCard = { card -> navController.navigate("$CARD_DETAIL_SCREEN/${card.deckId}/${card.id}") },
                 onCreateCard = { /*TODO*/ },
                 onDeleteDeck = { /*TODO*/ }
             )
         }
-        composable(LearnDestinations.CARD_DETAIL_ROUTE) {
+        composable(
+            route = LearnDestinations.CARD_DETAIL_ROUTE,
+            arguments = listOf(navArgument(CARD_ID_ARG) { type = NavType.StringType })
+        ) {
             CardScreen(
                 onUpdateContent = { /*TODO*/ },
                 onSwitchSide = { /*TODO*/ },
