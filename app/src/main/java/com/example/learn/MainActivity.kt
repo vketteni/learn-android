@@ -7,15 +7,14 @@ import androidx.activity.compose.setContent
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.learn.ui.navigation.LearnNavGraph
-import com.example.learn.ui.theme.ScratchynotesTheme
+import com.example.learn.ui.theme.LearnTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ScratchynotesTheme {
-                LearnNavGraph()
+            LearnTheme {
+                LearnApp()
             }
         }
     }

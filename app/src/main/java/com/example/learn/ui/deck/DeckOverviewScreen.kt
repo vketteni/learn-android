@@ -8,24 +8,35 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.learn.LearnTopBar
+import com.example.learn.R
 import com.example.learn.data.local.LocalDeck
+import com.example.learn.ui.AppViewModelProvider
+import kotlinx.coroutines.flow.StateFlow
 
 // Deck composable
 @Composable
 fun DeckOverviewScreen(
     onNavigateDeck: (localDeck: LocalDeck) -> Unit,
-    onCreateDeck: () -> Unit,
-    onUpdateDeck: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateDeckEntry: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: DeckOverviewViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Scaffold(
-        topBar = { /* TODO */ },
+        topBar = {
+            LearnTopBar(title = stringResource(R.string.decks_overview_title), canNavigateBack = false) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateDeckEntry() },
                 modifier = Modifier
                     .navigationBarsPadding()
             ) {
@@ -37,15 +48,22 @@ fun DeckOverviewScreen(
             }
         },
     ) { innerPadding ->
+        // Collecting Ui State and preserve the value via remember()
+        val deckOverviewUiStateFlow: StateFlow<DeckOverviewUiState> =
+            viewModel.deckOverviewUiState
+
+        val deckOverviewUiState: State<DeckOverviewUiState> =
+            deckOverviewUiStateFlow.collectAsState()
+
+        val currentState: DeckOverviewUiState =
+            remember(deckOverviewUiState.value) {
+            deckOverviewUiState.value
+        }
+        // Alternatively: val currentState by viewModel.deckOverviewUiState.collectAsState()
+
         DeckOverviewBody(
-            localDeckList = listOf(
-                LocalDeck("1","Spanisch-challange", 2000010),
-                LocalDeck("2","Biologie-Neurology", 2000010),
-                LocalDeck("3","Chess-Moves", 2000010),
-            ),
-            onNavigateDeck = {},
-            onCreateDeck = { /*TODO*/ },
-            onUpdateDeck = { /*TODO*/ },
+            localDeckList = currentState.deckList,
+            onNavigateDeck = onNavigateDeck,
             modifier = modifier
                 .padding(innerPadding)
         )
@@ -56,8 +74,6 @@ fun DeckOverviewScreen(
 fun DeckOverviewBody(
     localDeckList: List<LocalDeck>,
     onNavigateDeck: (localDeck: LocalDeck) -> Unit,
-    onCreateDeck: () -> Unit,
-    onUpdateDeck: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (localDeckList.isEmpty()) {

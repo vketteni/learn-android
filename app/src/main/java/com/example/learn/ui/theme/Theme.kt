@@ -147,7 +147,7 @@ val AppColorScheme = ColorScheme(
 
 
 @Composable
-fun ScratchynotesTheme(
+fun LearnTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

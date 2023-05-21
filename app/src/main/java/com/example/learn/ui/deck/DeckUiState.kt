@@ -1,7 +1,27 @@
 package com.example.learn.ui.deck
 
+import com.example.learn.data.local.LocalDeck
+
 data class DeckUiState(
     val id: String = "",
     val title: String = "",
-    val created: Long = 0
+    val created: Long = 0,
+    val actionEnabled: Boolean = false
 )
+
+fun LocalDeck.toDeckUiState(actionEnabled: Boolean = false): DeckUiState = DeckUiState(
+    id = id,
+    title = title,
+    created = created,
+    actionEnabled = actionEnabled
+)
+
+fun DeckUiState.toDeck(): LocalDeck = LocalDeck(
+    id = id,
+    title = title,
+    created = created
+)
+
+fun DeckUiState.isValid(): Boolean {
+    return title.isNotBlank()
+}
