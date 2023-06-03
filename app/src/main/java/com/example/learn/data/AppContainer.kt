@@ -5,6 +5,7 @@ import com.example.learn.data.local.LearnDatabase
 
 interface AppContainer {
     val decksRepository: DecksRepository
+    val cardsRepository: CardsRepository
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
@@ -13,5 +14,8 @@ class AppDataContainer(private val context: Context) : AppContainer {
         OfflineDecksRepository(LearnDatabase.getDatabase(context).deckDao())
     }
 
+    override val cardsRepository: CardsRepository by lazy {
+        OfflineCardsRepository(LearnDatabase.getDatabase(context).cardDao())
+    }
 
 }

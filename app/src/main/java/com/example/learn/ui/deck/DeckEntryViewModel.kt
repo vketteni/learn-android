@@ -12,7 +12,11 @@ class DeckEntryViewModel(private val decksRepository: DecksRepository): ViewMode
     private set
 
     fun updateUiState(newUiState: DeckUiState) {
-        deckUiState = newUiState.copy()
+        val actionEnabled = newUiState.isValid()
+        deckUiState = newUiState.copy(
+            actionEnabled = actionEnabled
+        )
+
     }
 
     suspend fun saveDeck() {

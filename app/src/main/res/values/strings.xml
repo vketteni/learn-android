@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Learn</string>
     <string name="back">back</string>
-    <string name="decks_overview_title">Decks</string>
-    <string name="deck_entry_screen_title">Add deck</string>
+    <string name="decks_overview_title">Card decks (deck overview screen)</string>
+    <string name="deck_entry_screen_title">Add deck (deck entry screen)</string>
     <string name="save_action">Save</string>
     <string name="deck_title_req">Deck Title *</string>
+    <string name="deck_detail_screen_title">Cards (deck detail screen)</string>
+    <string name="add_card_title">New card</string>
+    <string name="card_front_content_textfield_title">Front content</string>
+    <string name="card_back_content_title">Back content</string>
 </resources>

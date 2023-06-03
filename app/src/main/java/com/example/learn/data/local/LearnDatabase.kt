@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [LocalDeck::class, LocalCard::class], version = 1, exportSchema = false)
 abstract class LearnDatabase : RoomDatabase() {
     abstract fun deckDao(): DecksDao
-    abstract fun cardDao(): CardDao
+    abstract fun cardDao(): CardsDao
 
     companion object {
 
