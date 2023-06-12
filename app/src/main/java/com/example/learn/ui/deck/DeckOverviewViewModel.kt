@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * View Model to
  */
-class DeckOverviewViewModel(private val decksRepository: DecksRepository): ViewModel() {
+class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
     /**
      * Holds current deck ui state
      */

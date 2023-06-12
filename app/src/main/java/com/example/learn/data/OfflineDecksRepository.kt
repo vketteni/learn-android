@@ -16,11 +16,11 @@ class OfflineDecksRepository(
 
     override suspend fun deleteAllDecks() = decksDao.deleteDecks()
 
-    override fun getDeckStream(deckId: String): Flow<LocalDeck> = decksDao.observeDeckById(deckId)
+    override fun getDeckStream(deckId: String): Flow<LocalDeck> = decksDao.observeDeck(deckId)
 
     override fun getDecksStream(): Flow<List<LocalDeck>> = decksDao.observeDecks()
 
-    override suspend fun deleteDeck(deckId: String) = decksDao.deleteDeckById(deckId)
+    override suspend fun deleteDeck(deckId: String) = decksDao.deleteDeck(deckId)
 
     override suspend fun refreshDecks() {
         TODO("Not yet implemented")
@@ -31,7 +31,7 @@ class OfflineDecksRepository(
     }
 
     override suspend fun updateDeck(deckId: String, title: String) {
-        val deck = decksDao.getTaskById(deckId)?.copy(
+        val deck = decksDao.getDeck(deckId)?.copy(
             title = title,
         ) ?: throw Exception("Deck (id $deckId) not found")
         decksDao.insert(deck)

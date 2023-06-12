@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.learn.LearnApplication
 import com.example.learn.ui.card.CardAddEditViewModel
+import com.example.learn.ui.card.CardDetailViewModel
 import com.example.learn.ui.deck.DeckDetailViewModel
 import com.example.learn.ui.deck.DeckEntryViewModel
 import com.example.learn.ui.deck.DeckOverviewViewModel
@@ -34,6 +35,13 @@ object AppViewModelProvider {
 
         initializer {
             CardAddEditViewModel(
+                learnApplication().container.cardsRepository,
+                this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            CardDetailViewModel(
                 learnApplication().container.cardsRepository,
                 this.createSavedStateHandle()
             )

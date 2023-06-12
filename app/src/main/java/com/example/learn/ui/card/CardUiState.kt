@@ -11,6 +11,7 @@ data class CardUiState(
     val actionEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val isCardSaved: Boolean = false,
+    val showFront: Boolean = true,
 )
 
 fun LocalCard.toCardUiState(actionEnabled: Boolean = false): CardUiState {

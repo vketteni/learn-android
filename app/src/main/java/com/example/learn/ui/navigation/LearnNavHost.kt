@@ -2,6 +2,7 @@ package com.example.learn.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -76,8 +77,8 @@ fun LearnNavHost(
             )
         ) { entry ->
             DeckDetailScreen(
-                onNavigateCardDetail = { card ->
-                    navController.navigate("$CARD_DETAIL_SCREEN/${card.deckId}/${card.id}") },
+                onNavigateCardDetail = { cardId, deckId ->
+                    navController.navigate("$CARD_DETAIL_SCREEN/$deckId/$cardId") },
                 onNavigateCardAdd = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
                     DECK_ID_ARG)}/${R.string.add_card_title}") },
                 onNavigateDeckSettings = { /*TODO*/ },
@@ -87,14 +88,19 @@ fun LearnNavHost(
 
         composable(
             route = LearnDestinations.CARD_DETAIL_ROUTE,
-            arguments = listOf(navArgument(CARD_ID_ARG) { type = NavType.StringType }
+            arguments = listOf(
+                navArgument(CARD_ID_ARG) { type = NavType.StringType },
+                navArgument(DECK_ID_ARG) { type = NavType.StringType },
             )
-        ) {
+        ) { entry ->
             CardDetailScreen(
-                onNavigateCardEdit = { /*TODO*/ },
+                onNavigateCardEdit = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
+                    DECK_ID_ARG)}/${R.string.edit_card_title}?$CARD_ID_ARG=${entry.arguments!!.getString(
+                    CARD_ID_ARG)}") },
                 onUpdateContent = { /*TODO*/ },
                 onSwitchSide = { /*TODO*/ },
-                onDeleteCard = { /*TODO*/ }
+                onDeleteCard = { /*TODO*/ },
+                onNavigateUp = { navController.navigateUp() },
             )
         }
 
@@ -118,21 +124,6 @@ fun LearnNavHost(
                 topBarTitle = entry.arguments?.getInt(TITLE_ARG)!!,
                 onNavigateUp = { navController.navigateUp() },
                 onNavigateBack = { navController.popBackStack() },
-                onUpdateCard = { /*TODO*/ },
-            )
-        }
-
-        composable(
-            route = LearnDestinations.CARD_DETAIL_ROUTE,
-            arguments = listOf(
-                navArgument(CARD_ID_ARG) { type = NavType.StringType }
-            )
-        ) {
-            CardDetailScreen(
-                onDeleteCard = { /*TODO*/ },
-                onSwitchSide = { /*TODO*/ },
-                onUpdateContent = { /*TODO*/ },
-                onNavigateCardEdit = { }
             )
         }
 

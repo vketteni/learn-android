@@ -1,5 +1,7 @@
 package com.example.learn
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 
@@ -13,6 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.learn.ui.navigation.LearnNavHost
@@ -34,10 +37,11 @@ fun LearnTopBar(
     title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
-    navigateUp: () -> Unit = {}
+    navigateUp: () -> Unit = {},
+    actions: @Composable (RowScope.() -> Unit) = {}
 ) {
     if (canNavigateBack) {
-        TopAppBar(title = { Text(title) },
+        TopAppBar(title = { Text(title, modifier.padding(horizontal = 8.dp)) },
             modifier = modifier,
             navigationIcon = {
                 IconButton(onClick = navigateUp) {
@@ -46,7 +50,8 @@ fun LearnTopBar(
                         contentDescription = stringResource(R.string.back)
                     )
                 }
-            }
+            },
+            actions = actions
         )
     } else {
         TopAppBar(

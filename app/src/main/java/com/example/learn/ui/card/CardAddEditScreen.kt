@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,7 +36,6 @@ fun CardAddEditScreen(
     @StringRes topBarTitle: Int,
     onNavigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
-    onUpdateCard: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CardAddEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -42,10 +43,7 @@ fun CardAddEditScreen(
         topBar = {
             LearnTopBar(title = stringResource(id = topBarTitle), canNavigateBack = true, navigateUp = onNavigateUp)
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onUpdateCard() }) {
-            }
-        }
+
     ) { innerPadding ->
 
         CardAddEditContent(
@@ -110,16 +108,23 @@ fun CardAddEditForm(
         ,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        val textfieldColors = OutlinedTextFieldDefaults.colors(
+            cursorColor = Color.Gray,
+            focusedBorderColor = Color.Gray, // Set the outline color for focused state to gray
+            unfocusedBorderColor = MaterialTheme.colors.onSurface,
+        )
+
+
         OutlinedTextField(
             value = cardUiState.frontContent,
             onValueChange = { onValueChange(cardUiState.copy(frontContent = it)) },
             label = { Text(stringResource(R.string.card_front_content_textfield_title)) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             enabled = enabled,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Gray, // Set the outline color for focused state to gray
-                unfocusedBorderColor = MaterialTheme.colors.onSurface,
-            )
+            minLines = 6,
+            colors = textfieldColors,
+            shape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 8.dp, bottomStart = 8.dp)
         )
         OutlinedTextField(
             value = cardUiState.backContent,
@@ -127,10 +132,9 @@ fun CardAddEditForm(
             label = { Text(stringResource(R.string.card_back_content_title)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Gray, // Set the outline color for focused state to gray
-                unfocusedBorderColor = MaterialTheme.colors.onSurface,
-            )
+            minLines = 6,
+            colors = textfieldColors,
+            shape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 8.dp, bottomStart = 8.dp)
         )
 
 

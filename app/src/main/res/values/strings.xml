@@ -9,4 +9,7 @@
     <string name="add_card_title">New card</string>
     <string name="card_front_content_textfield_title">Front content</string>
     <string name="card_back_content_title">Back content</string>
+    <string name="edit_card_title">Edit card</string>
+    <string name="card_detail_front_side_title">Front Content</string>
+    <string name="card_detail_back_side_title">Back Content</string>
 </resources>

@@ -3,8 +3,8 @@ package com.example.learn.ui.deck
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learn.data.CardTitle
 import com.example.learn.data.CardsRepository
-import com.example.learn.data.local.LocalCard
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ class DeckDetailViewModel(
 
     val deckId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.DECK_ID_ARG])
 
-    val deckDetailUiState: StateFlow<DeckDetailUiState> = cardsRepository.getCardsByDeckStream(deckId).map { DeckDetailUiState(it) }
+    val deckDetailUiState: StateFlow<DeckDetailUiState> = cardsRepository.getCardTitlesStream(deckId).map { DeckDetailUiState(it) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -30,4 +30,4 @@ class DeckDetailViewModel(
     }
 }
 
-data class DeckDetailUiState(val cardsList: List<LocalCard> = listOf())
+data class DeckDetailUiState(val cardTitleList: List<CardTitle> = listOf())

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
+import com.example.learn.data.CardTitle
 import com.example.learn.data.local.LocalCard
 import com.example.learn.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun DeckDetailScreen(
     onNavigateUp: () -> Unit,
-    onNavigateCardDetail: (localCard: LocalCard) -> Unit,
+    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     onNavigateCardAdd: () -> Unit,
     onNavigateDeckSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -76,7 +77,7 @@ fun DeckDetailScreen(
         DeckDetailBody(
             modifier = modifier
                 .padding(innerPadding),
-            cardList = currentState.cardsList,
+            cardTitleList = currentState.cardTitleList,
             onNavigateCardDetail = onNavigateCardDetail
         )
     }
@@ -84,11 +85,11 @@ fun DeckDetailScreen(
 
 @Composable
 fun DeckDetailBody(
-    cardList: List<LocalCard>,
-    onNavigateCardDetail: (localCard: LocalCard) -> Unit,
+    cardTitleList: List<CardTitle>,
+    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (cardList.isEmpty()) {
+    if (cardTitleList.isEmpty()) {
         Text(
             text = "Your deck has no cards, create a card?",
             style = MaterialTheme.typography.titleMedium,
@@ -98,8 +99,8 @@ fun DeckDetailBody(
         LazyColumn(modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
         ) {
-            items(items=cardList, key = { it.id }) { card ->
-                CardItem(card, onNavigateCardDetail)
+            items(items=cardTitleList, key = { it.cardId }) { cardTitle ->
+                CardItem(cardTitle, onNavigateCardDetail)
                 Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
             }
         }
@@ -108,17 +109,19 @@ fun DeckDetailBody(
 
 @Composable
 fun CardItem(
-    card: LocalCard,
-    onNavigateCardDetail: (localCard: LocalCard) -> Unit,
+    cardTitle: CardTitle,
+    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardId = cardTitle.cardId
+    val deckId = cardTitle.deckId
     Row(modifier= modifier
-        .clickable { onNavigateCardDetail(card) }
+        .clickable { onNavigateCardDetail(cardId, deckId) }
         .fillMaxWidth()
         .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Text(
-            text = card.front,
+            text = cardTitle.title,
             modifier = Modifier.weight(1.5f),
             fontWeight = FontWeight.Bold
         )

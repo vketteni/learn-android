@@ -16,17 +16,17 @@ interface DecksDao {
     suspend fun deleteDecks()
 
     @Query("DELETE FROM decks WHERE id = :deckId")
-    suspend fun deleteDeckById(deckId:String)
+    suspend fun deleteDeck(deckId:String)
 
     @Query("SELECT * from decks WHERE id = :deckId")
-    fun observeDeckById(deckId:String): Flow<LocalDeck>
+    fun observeDeck(deckId:String): Flow<LocalDeck>
 
     @Query("SELECT * from decks ORDER BY created DESC")
     fun observeDecks(): Flow<List<LocalDeck>>
 
     @Query("SELECT * from decks WHERE id = :deckId")
-    fun getTaskById(deckId: String): LocalDeck?
+    fun getDeck(deckId: String): LocalDeck?
 
     @Query("SELECT * from decks ORDER BY created DESC")
-    fun getTasks(): List<LocalDeck>
+    fun getDecks(): List<LocalDeck>
 }
