@@ -49,9 +49,11 @@ android {
 }
 
 dependencies {
-
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation ("com.google.code.gson:gson:2.10.1")
     implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.browser:browser:1.5.0")
 

@@ -2,6 +2,8 @@ package com.example.learn.data
 
 import android.content.Context
 import com.example.learn.data.local.LearnDatabase
+import com.example.learn.data.local.OfflineCardsRepository
+import com.example.learn.data.local.OfflineDecksRepository
 
 interface AppContainer {
     val decksRepository: DecksRepository

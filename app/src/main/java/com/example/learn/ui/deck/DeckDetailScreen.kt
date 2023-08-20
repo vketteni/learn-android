@@ -9,27 +9,32 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
-import com.example.learn.data.CardTitle
-import com.example.learn.data.local.LocalCard
 import com.example.learn.ui.AppViewModelProvider
-import kotlinx.coroutines.flow.StateFlow
 
 // Deck composable
 @Composable
@@ -37,16 +42,44 @@ fun DeckDetailScreen(
     onNavigateUp: () -> Unit,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     onNavigateCardAdd: () -> Unit,
+    onNavigateDeckEdit: () -> Unit,
+    onDelete: () -> Unit,
     onNavigateDeckSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+    if (deleteConfirmationRequired) {
+        DeleteConfirmationDialog(
+            onDeleteConfirm = {
+                deleteConfirmationRequired = false
+                onDelete()
+            },
+            onDeleteCancel = { deleteConfirmationRequired = false }
+        )
+    }
     Scaffold(
         topBar = {
             LearnTopBar(
-                title = stringResource(R.string.deck_detail_screen_title), 
-                canNavigateBack = true, 
-                navigateUp = onNavigateUp
+                title = stringResource(R.string.deck_detail_screen_title),
+                canNavigateBack = true,
+                navigateUp = onNavigateUp,
+                actions = {
+                    IconButton(onClick = { onNavigateDeckEdit() }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = { deleteConfirmationRequired = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -65,19 +98,12 @@ fun DeckDetailScreen(
         }
 
     ) { innerPadding ->
-
-        val deckDetailUiStateFlow: StateFlow<DeckDetailUiState> = viewModel.deckDetailUiState
-
-        val deckDetailUiState: State<DeckDetailUiState> = deckDetailUiStateFlow.collectAsState()
-
-        val currentState: DeckDetailUiState = remember(deckDetailUiState.value) {
-            deckDetailUiState.value
-        }
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         DeckDetailBody(
             modifier = modifier
                 .padding(innerPadding),
-            cardTitleList = currentState.cardTitleList,
+            cardList = uiState.cards,
             onNavigateCardDetail = onNavigateCardDetail
         )
     }
@@ -85,11 +111,11 @@ fun DeckDetailScreen(
 
 @Composable
 fun DeckDetailBody(
-    cardTitleList: List<CardTitle>,
+    cardList: List<DeckDetailCardTitle>,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (cardTitleList.isEmpty()) {
+    if (cardList.isEmpty()) {
         Text(
             text = "Your deck has no cards, create a card?",
             style = MaterialTheme.typography.titleMedium,
@@ -99,8 +125,8 @@ fun DeckDetailBody(
         LazyColumn(modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
         ) {
-            items(items=cardTitleList, key = { it.cardId }) { cardTitle ->
-                CardItem(cardTitle, onNavigateCardDetail)
+            items(items=cardList, key = { it.cardId }) { card ->
+                CardItem(card, onNavigateCardDetail)
                 Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
             }
         }
@@ -109,21 +135,43 @@ fun DeckDetailBody(
 
 @Composable
 fun CardItem(
-    cardTitle: CardTitle,
+    card: DeckDetailCardTitle,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cardId = cardTitle.cardId
-    val deckId = cardTitle.deckId
     Row(modifier= modifier
-        .clickable { onNavigateCardDetail(cardId, deckId) }
+        .clickable { onNavigateCardDetail(card.cardId, card.deckId) }
         .fillMaxWidth()
         .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Text(
-            text = cardTitle.title,
+            text = card.title,
             modifier = Modifier.weight(1.5f),
             fontWeight = FontWeight.Bold
         )
     }
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    onDeleteConfirm: () -> Unit,
+    onDeleteCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = { /* Do nothing */ },
+        title = { Text(stringResource(R.string.attention))},
+        text = { Text(stringResource(R.string.delete_question))},
+        modifier = modifier.padding(16.dp),
+        dismissButton = {
+            TextButton(onClick = onDeleteCancel) {
+                Text(text = stringResource(R.string.no), color = Color.Black)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDeleteConfirm) {
+                Text(text = stringResource(R.string.yes), color = Color.Black)
+            }
+        }
+    )
 }

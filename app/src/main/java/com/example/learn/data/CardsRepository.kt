@@ -5,15 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardsRepository {
 
-    fun getCardTitlesStream(deckId: String): Flow<List<CardTitle>>
-
-    suspend fun getCard(cardId: String): LocalCard?
-
-    suspend fun updateCard(card: LocalCard)
-
-    suspend fun createCard(front: String, back: String, deckId: String)
-
     fun getCardStream(cardId: String): Flow<LocalCard>
-}
+    suspend fun getCard(cardId: String): LocalCard
+    suspend fun updateCard(card: LocalCard)
+    suspend fun createCard(deckId: String, contentFront: String, contentBack: String): LocalCard
+    suspend fun getCardTitle(cardId: String): String
 
-data class CardTitle(val title: String, val cardId: String, val deckId: String)
+}

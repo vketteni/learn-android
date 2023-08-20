@@ -2,7 +2,6 @@ package com.example.learn.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -82,7 +81,9 @@ fun LearnNavHost(
                 onNavigateCardAdd = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
                     DECK_ID_ARG)}/${R.string.add_card_title}") },
                 onNavigateDeckSettings = { /*TODO*/ },
-                onNavigateUp = { navController.navigateUp() }
+                onNavigateUp = { navController.navigateUp() },
+                onDelete = {},
+                onNavigateDeckEdit = {}
             )
         }
 
@@ -97,8 +98,6 @@ fun LearnNavHost(
                 onNavigateCardEdit = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
                     DECK_ID_ARG)}/${R.string.edit_card_title}?$CARD_ID_ARG=${entry.arguments!!.getString(
                     CARD_ID_ARG)}") },
-                onUpdateContent = { /*TODO*/ },
-                onSwitchSide = { /*TODO*/ },
                 onDeleteCard = { /*TODO*/ },
                 onNavigateUp = { navController.navigateUp() },
             )

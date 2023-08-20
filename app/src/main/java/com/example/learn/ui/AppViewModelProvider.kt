@@ -29,6 +29,7 @@ object AppViewModelProvider {
         initializer {
             DeckDetailViewModel(
                 learnApplication().container.cardsRepository,
+                learnApplication().container.decksRepository,
                 this.createSavedStateHandle()
             )
         }
@@ -36,6 +37,7 @@ object AppViewModelProvider {
         initializer {
             CardAddEditViewModel(
                 learnApplication().container.cardsRepository,
+                learnApplication().container.decksRepository,
                 this.createSavedStateHandle()
             )
         }

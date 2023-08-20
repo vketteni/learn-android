@@ -7,23 +7,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.CardsRepository
+import com.example.learn.data.DecksRepository
+import com.example.learn.data.local.LocalDeck
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.launch
 
-data class AddEditCardUiState(
-    val front: String = "",
-    val back: String = "",
-    val isLoading: Boolean = false,
-    val isCardSaved: Boolean = false,
-)
-
 class CardAddEditViewModel(
     private val cardsRepository: CardsRepository,
+    private val decksRepository: DecksRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     private val cardId: String? = savedStateHandle[LearnDestinationArguments.CARD_ID_ARG]
-
     private val deckId: String = savedStateHandle[LearnDestinationArguments.DECK_ID_ARG]!!
 
     var cardUiState by mutableStateOf(CardUiState())
@@ -43,18 +38,29 @@ class CardAddEditViewModel(
 
     fun saveCard() {
         if (cardId == null) {
-            createNewCard()
+            createCard()
         } else {
             updateCard()
         }
     }
 
-    private fun createNewCard() {
+    private fun createCard() {
         viewModelScope.launch {
-            cardsRepository.createCard(
-                front = cardUiState.frontContent,
-                back = cardUiState.backContent,
-                deckId = deckId
+            val deck = decksRepository.getDeck(deckId)
+            val card = cardsRepository.createCard(
+                deckId = deckId,
+                contentFront = cardUiState.contentFront,
+                contentBack = cardUiState.contentBack,
+            )
+
+            val cardIds: MutableList<String> = deck.cardIds.toMutableList()
+            cardIds.add(card.id)
+            decksRepository.updateDeck(
+                LocalDeck(
+                    id = deck.id,
+                    title = deck.title,
+                    cardIds = cardIds,
+                )
             )
         }
     }
@@ -76,24 +82,15 @@ class CardAddEditViewModel(
         )
         viewModelScope.launch {
             cardsRepository.getCard(cardId).let { card ->
-                cardUiState = if (card != null) {
-                    cardUiState.copy(
+                cardUiState = cardUiState.copy(
                         id = card.id,
                         deckId = card.deckId,
                         created = card.created,
-                        frontContent = card.front,
-                        backContent = card.back,
+                        contentFront = card.frontContent,
+                        contentBack = card.backContent,
                         isLoading = false,
                     )
-                } else {
-                    cardUiState.copy(isLoading = false)
-
-                }
             }
         }
     }
-
-
-
-
 }

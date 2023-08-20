@@ -5,25 +5,25 @@ import com.example.learn.data.local.LocalCard
 data class CardUiState(
     val id: String = "",
     val deckId: String = "",
-    val frontContent: String = "",
-    val backContent: String = "",
+    val contentFront: String = "",
+    val contentBack: String = "",
     val created: Long = 0,
     val actionEnabled: Boolean = false,
     val isLoading: Boolean = false,
-    val isCardSaved: Boolean = false,
-    val showFront: Boolean = true,
+    val isSaved: Boolean = false,
+    val isFront: Boolean = true,
 )
 
 fun LocalCard.toCardUiState(actionEnabled: Boolean = false): CardUiState {
     return CardUiState(
         id = id,
         deckId = deckId,
-        frontContent = front,
-        backContent = back,
+        contentFront = frontContent,
+        contentBack = backContent,
         created = created,
         actionEnabled = actionEnabled,
         isLoading = false,
-        isCardSaved = false
+        isSaved = false,
     )
 }
 
@@ -31,12 +31,12 @@ fun CardUiState.toLocalCard(): LocalCard {
     return LocalCard(
         id=id,
         deckId = deckId,
-        front=frontContent,
-        back=backContent,
-        created = created
+        frontContent=contentFront,
+        backContent=contentBack,
+        created = created,
     )
 }
 
 fun CardUiState.isValid(): Boolean {
-    return frontContent.isNotBlank() && backContent.isNotBlank()
+    return contentFront.isNotBlank() && contentBack.isNotBlank()
 }

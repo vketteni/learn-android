@@ -1,21 +1,18 @@
 package com.example.learn.ui.card
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.learn.R
 import com.example.learn.data.CardsRepository
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class CardDetailViewModel(
-    private val cardsRepository: CardsRepository,
+    cardsRepository: CardsRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -29,11 +26,11 @@ class CardDetailViewModel(
         CardUiState(
             id = card.id,
             deckId = card.deckId,
-            frontContent = card.front,
-            backContent = card.back,
+            contentFront = card.frontContent,
+            contentBack = card.backContent,
             created = card.created,
             actionEnabled = true,
-            showFront = showFront
+            isFront = showFront
         )
     }
         .stateIn(

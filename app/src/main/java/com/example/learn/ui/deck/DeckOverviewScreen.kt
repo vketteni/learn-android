@@ -9,12 +9,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
@@ -48,12 +48,13 @@ fun DeckOverviewScreen(
             }
         },
     ) { innerPadding ->
+
         // Collecting Ui State from viewModel and preserve the value via remember()
         val deckOverviewUiStateFlow: StateFlow<DeckOverviewUiState> =
             viewModel.deckOverviewUiState
 
         val deckOverviewUiState: State<DeckOverviewUiState> =
-            deckOverviewUiStateFlow.collectAsState()
+            deckOverviewUiStateFlow.collectAsStateWithLifecycle()
 
         val currentState: DeckOverviewUiState =
             remember(deckOverviewUiState.value) {

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(entities = [LocalDeck::class, LocalCard::class], version = 1, exportSchema = false)
+@TypeConverters(CardIdListTypeConverter::class)
 abstract class LearnDatabase : RoomDatabase() {
     abstract fun deckDao(): DecksDao
     abstract fun cardDao(): CardsDao

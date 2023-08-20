@@ -9,5 +9,6 @@ data class LocalDeck(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val title: String,
+    val cardIds: List<String> = listOf(),
     val created: Long = System.currentTimeMillis(),
 )

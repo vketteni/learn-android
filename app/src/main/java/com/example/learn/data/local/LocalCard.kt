@@ -8,7 +8,7 @@ data class LocalCard(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val deckId: String,
-    val front: String = "",
-    val back: String = "",
+    val frontContent: String,
+    val backContent: String,
     val created: Long = System.currentTimeMillis(),
 )

@@ -9,18 +9,12 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,8 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
-import com.example.learn.ui.deck.DeckInputForm
-import com.example.learn.ui.deck.DeckUiState
 
 @Composable
 fun CardAddEditScreen(
@@ -116,8 +108,8 @@ fun CardAddEditForm(
 
 
         OutlinedTextField(
-            value = cardUiState.frontContent,
-            onValueChange = { onValueChange(cardUiState.copy(frontContent = it)) },
+            value = cardUiState.contentFront,
+            onValueChange = { onValueChange(cardUiState.copy(contentFront = it)) },
             label = { Text(stringResource(R.string.card_front_content_textfield_title)) },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -127,8 +119,8 @@ fun CardAddEditForm(
             shape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 8.dp, bottomStart = 8.dp)
         )
         OutlinedTextField(
-            value = cardUiState.backContent,
-            onValueChange = { onValueChange(cardUiState.copy(backContent = it)) },
+            value = cardUiState.contentBack,
+            onValueChange = { onValueChange(cardUiState.copy(contentBack = it)) },
             label = { Text(stringResource(R.string.card_back_content_title)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
