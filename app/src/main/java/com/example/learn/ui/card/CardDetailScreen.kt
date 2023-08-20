@@ -32,6 +32,8 @@ import kotlinx.coroutines.flow.StateFlow
 fun CardDetailScreen(
     onNavigateCardEdit: () -> Unit,
     onNavigateUp: () -> Unit,
+    onNavigateNext: (cardId: String, deckId: String) -> Unit,
+    onNavigatePrev: (cardId: String, deckId: String) -> Unit,
     onDeleteCard: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CardDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)

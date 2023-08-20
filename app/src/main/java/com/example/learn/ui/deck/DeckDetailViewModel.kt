@@ -14,14 +14,15 @@ import kotlinx.coroutines.launch
 
 
 data class DeckDetailUiState(
-    val cards: List<DeckDetailCardTitle> = listOf(),
+    val cardInfos: List<CardInfo> = listOf(),
     val loading: Boolean = false,
 )
 
-data class DeckDetailCardTitle(
+data class CardInfo(
     val cardId: String,
     val deckId: String,
     val title: String,
+    val position: Int,
 )
 
 class DeckDetailViewModel(
@@ -48,11 +49,12 @@ class DeckDetailViewModel(
             decksRepository.getDeckStream(deckId).collect { deck ->
                 _uiState.update {
                     it.copy(
-                        cards = deck.cardIds.map { cardId ->
-                            DeckDetailCardTitle(
+                        cardInfos = deck.cardReferences.map { cardId ->
+                            CardInfo(
                                 cardId,
                                 deckId,
                                 cardsRepository.getCardTitle(cardId),
+                                cardsRepository.getCardPosition(cardId),
                             )
                         },
                         loading = false

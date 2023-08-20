@@ -103,7 +103,7 @@ fun DeckDetailScreen(
         DeckDetailBody(
             modifier = modifier
                 .padding(innerPadding),
-            cardList = uiState.cards,
+            cardList = uiState.cardInfos,
             onNavigateCardDetail = onNavigateCardDetail
         )
     }
@@ -111,7 +111,7 @@ fun DeckDetailScreen(
 
 @Composable
 fun DeckDetailBody(
-    cardList: List<DeckDetailCardTitle>,
+    cardList: List<CardInfo>,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -135,7 +135,7 @@ fun DeckDetailBody(
 
 @Composable
 fun CardItem(
-    card: DeckDetailCardTitle,
+    card: CardInfo,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {

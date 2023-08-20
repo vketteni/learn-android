@@ -98,8 +98,12 @@ fun LearnNavHost(
                 onNavigateCardEdit = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
                     DECK_ID_ARG)}/${R.string.edit_card_title}?$CARD_ID_ARG=${entry.arguments!!.getString(
                     CARD_ID_ARG)}") },
-                onDeleteCard = { /*TODO*/ },
                 onNavigateUp = { navController.navigateUp() },
+                onNavigateNext = { cardId, deckId ->
+                    navController.navigate("$CARD_DETAIL_SCREEN/$deckId/$cardId") },
+                onNavigatePrev = { cardId, deckId ->
+                    navController.navigate("$CARD_DETAIL_SCREEN/$deckId/$cardId") },
+                onDeleteCard = { /*TODO*/ },
             )
         }
 

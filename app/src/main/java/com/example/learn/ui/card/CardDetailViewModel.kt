@@ -15,9 +15,7 @@ class CardDetailViewModel(
     cardsRepository: CardsRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
-
     private val cardId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.CARD_ID_ARG])
-
     private val _showFront = MutableStateFlow(true)
     private val _card = cardsRepository.getCardStream(cardId)
     val uiState: StateFlow<CardUiState> = combine(

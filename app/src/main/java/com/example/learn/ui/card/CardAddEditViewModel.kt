@@ -53,13 +53,13 @@ class CardAddEditViewModel(
                 contentBack = cardUiState.contentBack,
             )
 
-            val cardIds: MutableList<String> = deck.cardIds.toMutableList()
+            val cardIds: MutableList<String> = deck.cardReferences.toMutableList()
             cardIds.add(card.id)
             decksRepository.updateDeck(
                 LocalDeck(
                     id = deck.id,
                     title = deck.title,
-                    cardIds = cardIds,
+                    cardReferences = cardIds,
                 )
             )
         }
