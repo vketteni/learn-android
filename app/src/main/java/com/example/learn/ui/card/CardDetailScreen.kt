@@ -21,19 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardDetailScreen(
     onNavigateCardEdit: () -> Unit,
-    onNavigateUp: () -> Unit,
-    onNavigateNext: (cardId: String, deckId: String) -> Unit,
-    onNavigatePrev: (cardId: String, deckId: String) -> Unit,
+    onNavigateUp: (deckId: String) -> Unit,
+    onNavigateCardDetail: (cardId: String) -> Unit,
     onDeleteCard: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CardDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -41,13 +42,14 @@ fun CardDetailScreen(
     val cardDetailUiStateFlow: StateFlow<CardUiState> = viewModel.uiState
     val cardDetailUiState: State<CardUiState> = cardDetailUiStateFlow.collectAsState()
     val currentState: CardUiState = remember (cardDetailUiState.value) { cardDetailUiState.value }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             LearnTopBar(
                 title = "",
                 canNavigateBack = true,
-                navigateUp = onNavigateUp,
+                navigateUp = { onNavigateUp(viewModel.deckId) },
                 actions = {
                     IconButton(onClick = { onNavigateCardEdit() }) {
                         Icon(
@@ -70,7 +72,15 @@ fun CardDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                onNavigateCardDetail(
+                                    viewModel.getIdByCardPosition(
+                                        position = if (currentState.cardPosition != 0) currentState.cardPosition - 1 else currentState.deckLength - 1
+                                    )
+                                )
+                            }
+                        } ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = null,
@@ -84,7 +94,15 @@ fun CardDetailScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                onNavigateCardDetail(
+                                    viewModel.getIdByCardPosition(
+                                        position = if (currentState.cardPosition != currentState.deckLength - 1) currentState.cardPosition + 1 else 0
+                                    )
+                                )
+                            }
+                        } ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowForward,
                                 contentDescription = null,
@@ -98,7 +116,7 @@ fun CardDetailScreen(
     ) { innerPadding ->
 
 
-        
+
         val content = if (currentState.isFront) currentState.contentFront else currentState.contentBack
 
         CardDetailBody(

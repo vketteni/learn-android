@@ -17,7 +17,7 @@ class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
     /**
      * Holds current deck ui state
      */
-    val deckOverviewUiState: StateFlow<DeckOverviewUiState> = decksRepository
+    val uiState: StateFlow<DeckOverviewUiState> = decksRepository
         .getDecksStream().map { DeckOverviewUiState(it) }
         .stateIn(
             scope = viewModelScope,
@@ -35,4 +35,4 @@ class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
 /**
  * Ui state for DeckOverviewScreen
  */
-data class DeckOverviewUiState(val deckList: List<LocalDeck> = listOf())
+data class DeckOverviewUiState(val decks: List<LocalDeck> = listOf())

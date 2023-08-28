@@ -14,4 +14,5 @@ interface DecksRepository {
     suspend fun createDeck(title: String): LocalDeck
 
     suspend fun updateDeck(deck: LocalDeck)
+
 }

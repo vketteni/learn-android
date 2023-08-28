@@ -7,8 +7,18 @@ import java.util.*
 data class LocalCard(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
-    val deckId: String,
-    val frontContent: String,
-    val backContent: String,
+    val content: CardContent,
+    val reference: CardReference,
     val created: Long = System.currentTimeMillis(),
+)
+
+data class CardContent(
+    val front: String,
+    val back: String,
+)
+
+data class CardReference(
+    val position: Int,
+    val title: String,
+    // Add any additional information here
 )
