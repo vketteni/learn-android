@@ -12,7 +12,7 @@ import com.example.learn.SettingsScreen
 import com.example.learn.ui.card.CardAddEditScreen
 import com.example.learn.ui.card.CardDetailScreen
 import com.example.learn.ui.deck.DeckDetailScreen
-import com.example.learn.ui.deck.DeckEntryScreen
+import com.example.learn.ui.deck.DeckAddEditScreen
 import com.example.learn.ui.deck.DeckOverviewScreen
 
 import com.example.learn.ui.navigation.LearnDestinationArguments.CARD_ID_ARG
@@ -21,7 +21,7 @@ import com.example.learn.ui.navigation.LearnDestinationArguments.TITLE_ARG
 import com.example.learn.ui.navigation.LearnScreens.CARD_ADD_EDIT_SCREEN
 import com.example.learn.ui.navigation.LearnScreens.CARD_DETAIL_SCREEN
 import com.example.learn.ui.navigation.LearnScreens.DECK_DETAIL_SCREEN
-import com.example.learn.ui.navigation.LearnScreens.DECK_ENTRY_SCREEN
+import com.example.learn.ui.navigation.LearnScreens.DECK_ADD_EDIT_SCREEN
 import com.example.learn.ui.navigation.LearnScreens.DECK_OVERVIEW_SCREEN
 import com.example.learn.ui.navigation.LearnScreens.SETTINGS_SCREEN
 
@@ -29,7 +29,7 @@ import com.example.learn.ui.navigation.LearnScreens.SETTINGS_SCREEN
 object LearnScreens {
     const val DECK_OVERVIEW_SCREEN = "deck_overview"
     const val DECK_DETAIL_SCREEN = "deck_detail"
-    const val DECK_ENTRY_SCREEN = "card_entry"
+    const val DECK_ADD_EDIT_SCREEN = "deck_add_edit"
     const val CARD_DETAIL_SCREEN = "card_detail"
     const val CARD_ADD_EDIT_SCREEN = "card_add_edit"
     const val SETTINGS_SCREEN = "settings"
@@ -43,7 +43,7 @@ object LearnDestinationArguments {
 
 object LearnDestinations {
     const val DECK_OVERVIEW_ROUTE = DECK_OVERVIEW_SCREEN
-    const val DECK_ENTRY_ROUTE = DECK_ENTRY_SCREEN
+    const val DECK_ADD_EDIT_ROUTE = "$DECK_ADD_EDIT_SCREEN?$DECK_ID_ARG={$DECK_ID_ARG}"
     const val DECK_DETAIL_ROUTE = "$DECK_DETAIL_SCREEN/{$DECK_ID_ARG}"
     const val CARD_DETAIL_ROUTE = "$CARD_DETAIL_SCREEN/{$DECK_ID_ARG}/{$CARD_ID_ARG}"
     const val CARD_ADD_EDIT_ROUTE = "$CARD_ADD_EDIT_SCREEN/{$DECK_ID_ARG}/{$TITLE_ARG}?$CARD_ID_ARG={$CARD_ID_ARG}"
@@ -65,7 +65,7 @@ fun LearnNavHost(
             DeckOverviewScreen(
                 modifier = modifier,
                 onNavigateDeckDetail = { deck -> navController.navigate("$DECK_DETAIL_SCREEN/${deck.id}") },
-                onNavigateDeckEntry = { navController.navigate(DECK_ENTRY_SCREEN) }
+                onNavigateDeckEntry = { navController.navigate(DECK_ADD_EDIT_SCREEN) }
             )
         }
 
@@ -80,10 +80,10 @@ fun LearnNavHost(
                     navController.navigate("$CARD_DETAIL_SCREEN/$deckId/$cardId") },
                 onNavigateCardAdd = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
                     DECK_ID_ARG)}/${R.string.add_card_title}") },
-                onNavigateDeckSettings = { /*TODO*/ },
                 onNavigateUp = { navController.navigateUp() },
                 onDelete = {},
-                onNavigateDeckEdit = {}
+                onNavigateDeckEdit = { deckId ->
+                    navController.navigate("$DECK_ADD_EDIT_SCREEN?$DECK_ID_ARG=$deckId")}
             )
         }
 
@@ -103,8 +103,8 @@ fun LearnNavHost(
             )
         }
 
-        composable(LearnDestinations.DECK_ENTRY_ROUTE) {
-            DeckEntryScreen(
+        composable(LearnDestinations.DECK_ADD_EDIT_ROUTE) {
+            DeckAddEditScreen(
                 navigateBack = { navController.popBackStack() },
                 navigateUp = { navController.navigateUp() }
             )

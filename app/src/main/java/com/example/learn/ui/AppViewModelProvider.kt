@@ -9,7 +9,7 @@ import com.example.learn.LearnApplication
 import com.example.learn.ui.card.CardAddEditViewModel
 import com.example.learn.ui.card.CardDetailViewModel
 import com.example.learn.ui.deck.DeckDetailViewModel
-import com.example.learn.ui.deck.DeckEntryViewModel
+import com.example.learn.ui.deck.DeckAddEditViewModel
 import com.example.learn.ui.deck.DeckOverviewViewModel
 
 object AppViewModelProvider {
@@ -21,8 +21,9 @@ object AppViewModelProvider {
         }
 
         initializer {
-            DeckEntryViewModel(
-                learnApplication().container.decksRepository
+            DeckAddEditViewModel(
+                learnApplication().container.decksRepository,
+                this.createSavedStateHandle()
             )
         }
 

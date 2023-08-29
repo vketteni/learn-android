@@ -42,9 +42,8 @@ fun DeckDetailScreen(
     onNavigateUp: () -> Unit,
     onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
     onNavigateCardAdd: () -> Unit,
-    onNavigateDeckEdit: () -> Unit,
+    onNavigateDeckEdit: (deckId: String) -> Unit,
     onDelete: () -> Unit,
-    onNavigateDeckSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -65,7 +64,7 @@ fun DeckDetailScreen(
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
                 actions = {
-                    IconButton(onClick = { onNavigateDeckEdit() }) {
+                    IconButton(onClick = { onNavigateDeckEdit(viewModel.deckId) }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = null,

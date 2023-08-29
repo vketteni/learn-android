@@ -27,11 +27,11 @@ import com.example.learn.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
 
 @Composable
-fun DeckEntryScreen(
+fun DeckAddEditScreen(
     navigateBack: () -> Unit,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: DeckEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: DeckAddEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
