@@ -17,7 +17,7 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
 
     override val cardsRepository: CardsRepository by lazy {
-        OfflineCardsRepository(LearnDatabase.getDatabase(context).cardDao())
+        OfflineCardsRepository(LearnDatabase.getDatabase(context).cardDao(), LearnDatabase.getDatabase(context).deckDao())
     }
 
 }

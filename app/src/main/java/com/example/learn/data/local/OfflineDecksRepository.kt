@@ -14,7 +14,7 @@ class OfflineDecksRepository(
     }
 
     override suspend fun getDeck(deckId: String): LocalDeck {
-        return decksDao.getDeck(deckId) ?: throw Exception("Requested deck ($deckId) does not exist in the data base.")
+        return decksDao.getDeck(deckId) ?: throw Exception("Requested deck ($deckId) does not exist in the data base")
     }
 
     override fun getDeckStream(deckId: String): Flow<LocalDeck> = decksDao.observeDeck(deckId)

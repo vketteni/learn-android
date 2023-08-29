@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 // Deck composable
 @Composable
 fun DeckOverviewScreen(
-    onNavigateDeckDetail: (localDeck: LocalDeck) -> Unit,
+    onNavigateDeckDetail: (deckId: String) -> Unit,
     onNavigateDeckEntry: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckOverviewViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -51,7 +51,7 @@ fun DeckOverviewScreen(
 
         // Collecting Ui State from viewModel and preserve the value via remember()
         val deckOverviewUiStateFlow: StateFlow<DeckOverviewUiState> =
-            viewModel.deckOverviewUiState
+            viewModel.uiState
 
         val deckOverviewUiState: State<DeckOverviewUiState> =
             deckOverviewUiStateFlow.collectAsStateWithLifecycle()
@@ -63,7 +63,7 @@ fun DeckOverviewScreen(
         // Alternatively: val currentState by viewModel.deckOverviewUiState.collectAsState()
 
         DeckOverviewBody(
-            localDeckList = currentState.deckList,
+            localDeckList = currentState.decks,
             onNavigateDeckDetail = onNavigateDeckDetail,
             modifier = modifier
                 .padding(innerPadding)
@@ -74,7 +74,7 @@ fun DeckOverviewScreen(
 @Composable
 fun DeckOverviewBody(
     localDeckList: List<LocalDeck>,
-    onNavigateDeckDetail: (localDeck: LocalDeck) -> Unit,
+    onNavigateDeckDetail: (deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (localDeckList.isEmpty()) {
@@ -99,13 +99,13 @@ fun DeckOverviewBody(
 @Composable
 fun DeckCard(
     deck: LocalDeck,
-    onNavigateDeck: (localDeck: LocalDeck) -> Unit,
+    onNavigateDeck: (deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onNavigateDeck(deck) }
+            .clickable { onNavigateDeck(deck.id) }
             .padding(vertical = 16.dp, horizontal = 16.dp) // Add padding to the Row
     ) {
         Text(

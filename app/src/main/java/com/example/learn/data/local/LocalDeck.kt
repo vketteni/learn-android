@@ -12,3 +12,4 @@ data class LocalDeck(
     val cardIds: List<String> = listOf(),
     val created: Long = System.currentTimeMillis(),
 )
+

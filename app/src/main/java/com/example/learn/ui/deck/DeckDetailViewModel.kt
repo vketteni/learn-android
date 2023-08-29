@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.CardsRepository
 import com.example.learn.data.DecksRepository
+import com.example.learn.ui.card.CardUiReference
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,14 +15,8 @@ import kotlinx.coroutines.launch
 
 
 data class DeckDetailUiState(
-    val cards: List<DeckDetailCardTitle> = listOf(),
+    val cardReferences: List<CardUiReference> = listOf(),
     val loading: Boolean = false,
-)
-
-data class DeckDetailCardTitle(
-    val cardId: String,
-    val deckId: String,
-    val title: String,
 )
 
 class DeckDetailViewModel(
@@ -46,15 +41,16 @@ class DeckDetailViewModel(
 
         viewModelScope.launch {
             decksRepository.getDeckStream(deckId).collect { deck ->
-                _uiState.update {
-                    it.copy(
-                        cards = deck.cardIds.map { cardId ->
-                            DeckDetailCardTitle(
+                _uiState.update { state ->
+                    state.copy(
+                        cardReferences = deck.cardIds.map { cardId ->
+                            val cardReference = cardsRepository.getCardReference(cardId)
+                            CardUiReference(
                                 cardId,
-                                deckId,
-                                cardsRepository.getCardTitle(cardId),
+                                cardReference.title,
+                                cardReference.position,
                             )
-                        },
+                        }.sortedBy { it.position },
                         loading = false
                     )
                 }

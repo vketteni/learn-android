@@ -35,18 +35,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
+import com.example.learn.ui.card.CardUiReference
 
 // Deck composable
 @Composable
 fun DeckDetailScreen(
     onNavigateUp: () -> Unit,
-    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
-    onNavigateCardAdd: () -> Unit,
+    onNavigateCardDetail: (cardId: String) -> Unit,
+    onNavigateAddCard: (deckId: String) -> Unit,
     onNavigateDeckEdit: (deckId: String) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     if (deleteConfirmationRequired) {
         DeleteConfirmationDialog(
@@ -83,7 +85,7 @@ fun DeckDetailScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavigateCardAdd() },
+                onClick = { onNavigateAddCard(viewModel.deckId)},
                 modifier = Modifier
                     .navigationBarsPadding()
                     .padding(16.dp) // Add padding to the FAB
@@ -97,12 +99,11 @@ fun DeckDetailScreen(
         }
 
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         DeckDetailBody(
             modifier = modifier
                 .padding(innerPadding),
-            cardList = uiState.cards,
+            cards = uiState.cardReferences,
             onNavigateCardDetail = onNavigateCardDetail
         )
     }
@@ -110,11 +111,11 @@ fun DeckDetailScreen(
 
 @Composable
 fun DeckDetailBody(
-    cardList: List<DeckDetailCardTitle>,
-    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
+    cards: List<CardUiReference>,
+    onNavigateCardDetail: (cardId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (cardList.isEmpty()) {
+    if (cards.isEmpty()) {
         Text(
             text = "Your deck has no cards, create a card?",
             style = MaterialTheme.typography.titleMedium,
@@ -124,7 +125,7 @@ fun DeckDetailBody(
         LazyColumn(modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
         ) {
-            items(items=cardList, key = { it.cardId }) { card ->
+            items(items=cards, key = { it.cardId }) { card ->
                 CardItem(card, onNavigateCardDetail)
                 Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
             }
@@ -134,12 +135,12 @@ fun DeckDetailBody(
 
 @Composable
 fun CardItem(
-    card: DeckDetailCardTitle,
-    onNavigateCardDetail: (cardId: String, deckId: String) -> Unit,
+    card: CardUiReference,
+    onNavigateCardDetail: (cardId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier= modifier
-        .clickable { onNavigateCardDetail(card.cardId, card.deckId) }
+        .clickable { onNavigateCardDetail(card.cardId) }
         .fillMaxWidth()
         .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {

@@ -64,7 +64,8 @@ fun LearnNavHost(
         composable(LearnDestinations.DECK_OVERVIEW_ROUTE) {
             DeckOverviewScreen(
                 modifier = modifier,
-                onNavigateDeckDetail = { deck -> navController.navigate("$DECK_DETAIL_SCREEN/${deck.id}") },
+                onNavigateDeckDetail = { deckId ->
+                    navController.navigate("$DECK_DETAIL_SCREEN/$deckId") },
                 onNavigateDeckEntry = { navController.navigate(DECK_ADD_EDIT_SCREEN) }
             )
         }
@@ -76,10 +77,9 @@ fun LearnNavHost(
             )
         ) { entry ->
             DeckDetailScreen(
-                onNavigateCardDetail = { cardId, deckId ->
-                    navController.navigate("$CARD_DETAIL_SCREEN/$deckId/$cardId") },
-                onNavigateCardAdd = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
-                    DECK_ID_ARG)}/${R.string.add_card_title}") },
+                onNavigateCardDetail = { cardId ->
+                    navController.navigate("$CARD_DETAIL_SCREEN/${entry.arguments!!.getString(DECK_ID_ARG)}/$cardId") },
+                onNavigateAddCard = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(DECK_ID_ARG)}/${R.string.add_card_title}") },
                 onNavigateUp = { navController.navigateUp() },
                 onDelete = {},
                 onNavigateDeckEdit = { deckId ->
@@ -95,11 +95,15 @@ fun LearnNavHost(
             )
         ) { entry ->
             CardDetailScreen(
-                onNavigateCardEdit = { navController.navigate("$CARD_ADD_EDIT_SCREEN/${entry.arguments!!.getString(
-                    DECK_ID_ARG)}/${R.string.edit_card_title}?$CARD_ID_ARG=${entry.arguments!!.getString(
-                    CARD_ID_ARG)}") },
+                onNavigateCardEdit = { navController.navigate(
+                    "$CARD_ADD_EDIT_SCREEN/{${entry.arguments!!.getString(DECK_ID_ARG)}}/${R.string.edit_card_title}" +
+                            "?$CARD_ID_ARG=${entry.arguments!!.getString(CARD_ID_ARG)}"
+                )},
+                onNavigateUp = { navController.popBackStack(LearnDestinations.DECK_DETAIL_ROUTE, false) },
+                onNavigateCardDetail = { cardId: String ->
+                    navController.navigate("$CARD_DETAIL_SCREEN/${entry.arguments!!.getString(DECK_ID_ARG)}/$cardId")
+                },
                 onDeleteCard = { /*TODO*/ },
-                onNavigateUp = { navController.navigateUp() },
             )
         }
 

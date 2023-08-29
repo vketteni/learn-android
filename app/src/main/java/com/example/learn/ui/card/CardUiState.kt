@@ -1,12 +1,11 @@
 package com.example.learn.ui.card
 
-import com.example.learn.data.local.LocalCard
-
 data class CardUiState(
-    val id: String = "",
-    val deckId: String = "",
     val contentFront: String = "",
     val contentBack: String = "",
+    val cardTitle: String = "",
+    val cardPosition: Int = 0,
+    val deckLength: Int = 0,
     val created: Long = 0,
     val actionEnabled: Boolean = false,
     val isLoading: Boolean = false,
@@ -14,28 +13,16 @@ data class CardUiState(
     val isFront: Boolean = true,
 )
 
-fun LocalCard.toCardUiState(actionEnabled: Boolean = false): CardUiState {
-    return CardUiState(
-        id = id,
-        deckId = deckId,
-        contentFront = frontContent,
-        contentBack = backContent,
-        created = created,
-        actionEnabled = actionEnabled,
-        isLoading = false,
-        isSaved = false,
-    )
-}
+data class CardUiReference(
+    val cardId: String,
+    val title: String,
+    val position: Int,
+)
 
-fun CardUiState.toLocalCard(): LocalCard {
-    return LocalCard(
-        id=id,
-        deckId = deckId,
-        frontContent=contentFront,
-        backContent=contentBack,
-        created = created,
-    )
-}
+data class CardUiContent(
+    val front: String,
+    val back: String,
+)
 
 fun CardUiState.isValid(): Boolean {
     return contentFront.isNotBlank() && contentBack.isNotBlank()

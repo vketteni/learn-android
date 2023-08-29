@@ -9,9 +9,6 @@ interface CardsDao {
     @Query("SELECT * from cards WHERE id = :cardId")
     fun observeCard(cardId: String): Flow<LocalCard>
 
-    @Query("SELECT * from cards WHERE deckId = :deckId ORDER BY created DESC")
-    fun observeCards(deckId: String): Flow<List<LocalCard>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(localCard: LocalCard)
 
@@ -21,7 +18,6 @@ interface CardsDao {
     @Query("SELECT * from cards WHERE id = :cardId")
     suspend fun getCard(cardId: String) : LocalCard?
 
-    @Query("SELECT SUBSTR(frontContent, 1, 15) FROM cards WHERE id = :cardId")
-    suspend fun getCardTitle(cardId: String): String?
-
+    @Query("SELECT reference from cards WHERE id = :cardId")
+    suspend fun getCardReference(cardId: String): CardReference?
 }
