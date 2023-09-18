@@ -1,15 +1,21 @@
 package com.example.learn.ui.deck
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.DecksRepository
+import com.example.learn.data.local.LocalDeck
 import com.example.learn.ui.navigation.LearnDestinationArguments
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class DeckAddEditUiState(
+    val title: String = "",
+    val actionEnabled: Boolean = false,
+    val isSaved: Boolean = false,
+)
 class DeckAddEditViewModel(
     private val decksRepository: DecksRepository,
     savedStateHandle: SavedStateHandle
@@ -19,26 +25,29 @@ class DeckAddEditViewModel(
         if (deckId != null)
             loadDeck(deckId)
     }
-    var deckUiState by mutableStateOf(DeckUiState())
-    private set
+    private val _uiState = MutableStateFlow(DeckAddEditUiState())
+    val uiState = _uiState.asStateFlow()
 
-    fun updateUiState(newUiState: DeckUiState) {
-        val actionEnabled = newUiState.isValid()
-        deckUiState = newUiState.copy(
-            actionEnabled = actionEnabled
-        )
+    fun updateUiState(newUiState: DeckAddEditUiState) {
+        val actionEnabled = newUiState.title.isNotBlank()
+        _uiState.update {
+            newUiState.copy(
+                actionEnabled = actionEnabled
+            )
+        }
 
     }
     private fun loadDeck(deckId: String) {
         viewModelScope.launch {
             decksRepository.getDeck(deckId).let { deck ->
-                deckUiState = deckUiState.copy(
-                    title = deck.title,
-                )
+                _uiState.update {
+                    it.copy(title = deck.title)
+                }
             }
         }
     }
     fun saveDeck() {
+        _uiState.update { it.copy(isSaved = true) }
         if (deckId.isNullOrEmpty()) {
             createDeck()
         } else {
@@ -48,7 +57,7 @@ class DeckAddEditViewModel(
 
     private fun createDeck() {
         viewModelScope.launch {
-            decksRepository.createDeck(deckUiState.title)
+            decksRepository.createDeck(LocalDeck(title = _uiState.value.title))
         }
     }
 
@@ -59,7 +68,7 @@ class DeckAddEditViewModel(
                 val deck = decksRepository.getDeck(deckId)
                 decksRepository.updateDeck(
                     deck.copy(
-                        title = deckUiState.title
+                        title = _uiState.value.title
                     )
             )
         }

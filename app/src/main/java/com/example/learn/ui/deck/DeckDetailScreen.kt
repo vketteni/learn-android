@@ -43,7 +43,7 @@ fun DeckDetailScreen(
     onNavigateUp: () -> Unit,
     onNavigateCardDetail: (cardId: String) -> Unit,
     onNavigateAddCard: (deckId: String) -> Unit,
-    onNavigateDeckEdit: (deckId: String) -> Unit,
+    onNavigateDeckEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -54,6 +54,7 @@ fun DeckDetailScreen(
         DeleteConfirmationDialog(
             onDeleteConfirm = {
                 deleteConfirmationRequired = false
+                viewModel.deleteDeck()
                 onDelete()
             },
             onDeleteCancel = { deleteConfirmationRequired = false }
@@ -62,11 +63,11 @@ fun DeckDetailScreen(
     Scaffold(
         topBar = {
             LearnTopBar(
-                title = stringResource(R.string.deck_detail_screen_title),
+                title = R.string.deck_detail_screen_title,
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
                 actions = {
-                    IconButton(onClick = { onNavigateDeckEdit(viewModel.deckId) }) {
+                    IconButton(onClick = onNavigateDeckEdit ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = null,

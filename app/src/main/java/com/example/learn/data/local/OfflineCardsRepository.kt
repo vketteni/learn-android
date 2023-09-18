@@ -3,37 +3,38 @@ package com.example.learn.data.local
 import com.example.learn.data.CardsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class OfflineCardsRepository(
     private val cardsDao: CardsDao,
-    private val decksDao: DecksDao
+    private val decksDao: DecksDao,
+    private val deckCardCrossRefDao: DeckCardCrossRefDao
 ): CardsRepository {
     override suspend fun getCard(cardId: String): LocalCard {
         return withContext(Dispatchers.IO) {
             cardsDao.getCard(cardId) ?: throw Exception("Card with specified id doesn't exist.")
         }
     }
-    override fun getCardStream(cardId: String): Flow<LocalCard> = cardsDao.observeCard(cardId)
+    override suspend fun deleteCard(cardId: String) {
+        val card = cardsDao.getCard(cardId) ?: throw Exception("Card with specified id doesn't exist.")
+        cardsDao.delete(card)
+    }
+    override fun getCardStream(cardId: String): Flow<LocalCard?> = cardsDao.observeCard(cardId)
     override suspend fun updateCard(card: LocalCard) {
         val reference = card.reference.copy(title = takeTitle(card.content.front))
         cardsDao.update(card.copy(reference = reference))
     }
     override suspend fun createCard(content: CardContent, deckId: String): LocalCard {
-        return withContext(Dispatchers.IO) {
-            val deck: LocalDeck = decksDao.getDeck(deckId) ?: throw Exception("Deck with specified id doesn't exist")
-            val cardIds: MutableList<String> = deck.cardIds.toMutableList()
-            val position: Int = cardIds.size
+            val position: Int = decksDao.getCardIdsStream(deckId).first().size
             val title: String = takeTitle(content.front)
             val card = LocalCard(
                 content = CardContent(content.front, content.back),
                 reference = CardReference(position, title)
             )
-            cardIds.add(card.id)
             cardsDao.insert(card)
-            decksDao.update(deck.copy(cardIds = cardIds))
-            card
-        }
+            return card
+
     }
     override suspend fun getCardReference(cardId: String): CardReference {
         return withContext(Dispatchers.IO) {

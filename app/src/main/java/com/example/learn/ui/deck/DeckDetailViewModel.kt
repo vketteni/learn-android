@@ -7,10 +7,10 @@ import com.example.learn.data.CardsRepository
 import com.example.learn.data.DecksRepository
 import com.example.learn.ui.card.CardUiReference
 import com.example.learn.ui.navigation.LearnDestinationArguments
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -26,35 +26,24 @@ class DeckDetailViewModel(
     ): ViewModel() {
 
     val deckId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.DECK_ID_ARG])
+    val uiState: StateFlow<DeckDetailUiState> = decksRepository.getCardIdsStream(deckId)
+        .map { DeckDetailUiState(it.map { cardId ->
+            val cardReference = cardsRepository.getCardReference(cardId)
+            CardUiReference(cardId, cardReference.title, cardReference.position)})
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            initialValue = DeckDetailUiState()
+        )
 
-    private val _uiState = MutableStateFlow(DeckDetailUiState(loading = true))
-
-    val uiState: StateFlow<DeckDetailUiState> = _uiState.asStateFlow()
-
-
-    init {
-        refreshAll()
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    private fun refreshAll(){
-        _uiState.update { it.copy(loading = true) }
-
+    fun deleteDeck() {
         viewModelScope.launch {
-            decksRepository.getDeckStream(deckId).collect { deck ->
-                _uiState.update { state ->
-                    state.copy(
-                        cardReferences = deck.cardIds.map { cardId ->
-                            val cardReference = cardsRepository.getCardReference(cardId)
-                            CardUiReference(
-                                cardId,
-                                cardReference.title,
-                                cardReference.position,
-                            )
-                        }.sortedBy { it.position },
-                        loading = false
-                    )
-                }
-            }
+            decksRepository.deleteDeck(deckId)
         }
     }
 }

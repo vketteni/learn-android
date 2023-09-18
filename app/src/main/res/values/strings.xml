@@ -14,4 +14,7 @@
     <string name="delete_question">Confirm deletion?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="card_detail_title">card detail screen</string>
+    <string name="deck_add_title">Create deck</string>
+    <string name="deck_edit_title">Edit deck</string>
 </resources>

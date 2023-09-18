@@ -10,7 +10,8 @@ data class CardUiState(
     val actionEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val isSaved: Boolean = false,
-    val isFront: Boolean = true,
+    val isDeleted: Boolean = false,
+    val displayFront: Boolean = true,
 )
 
 data class CardUiReference(

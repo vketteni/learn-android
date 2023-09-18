@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.BottomAppBar
@@ -18,16 +19,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
+import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
-import kotlinx.coroutines.flow.StateFlow
+import com.example.learn.ui.deck.DeleteConfirmationDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,25 +40,33 @@ fun CardDetailScreen(
     onNavigateCardEdit: () -> Unit,
     onNavigateUp: (deckId: String) -> Unit,
     onNavigateCardDetail: (cardId: String) -> Unit,
-    onDeleteCard: () -> Unit,
+    onNavigateDeckDetail: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CardDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val cardDetailUiStateFlow: StateFlow<CardUiState> = viewModel.uiState
-    val cardDetailUiState: State<CardUiState> = cardDetailUiStateFlow.collectAsState()
-    val currentState: CardUiState = remember (cardDetailUiState.value) { cardDetailUiState.value }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val coroutineScope = rememberCoroutineScope()
+
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             LearnTopBar(
-                title = "",
+                title = R.string.card_detail_title,
                 canNavigateBack = true,
                 navigateUp = { onNavigateUp(viewModel.deckId) },
                 actions = {
                     IconButton(onClick = { onNavigateCardEdit() }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = { deleteConfirmationRequired = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -76,7 +89,7 @@ fun CardDetailScreen(
                             coroutineScope.launch {
                                 onNavigateCardDetail(
                                     viewModel.getIdByCardPosition(
-                                        position = if (currentState.cardPosition != 0) currentState.cardPosition - 1 else currentState.deckLength - 1
+                                        position =  if (uiState.cardPosition != 0) uiState.cardPosition - 1 else uiState.deckLength - 1
                                     )
                                 )
                             }
@@ -98,7 +111,7 @@ fun CardDetailScreen(
                             coroutineScope.launch {
                                 onNavigateCardDetail(
                                     viewModel.getIdByCardPosition(
-                                        position = if (currentState.cardPosition != currentState.deckLength - 1) currentState.cardPosition + 1 else 0
+                                        position = if (uiState.cardPosition != uiState.deckLength - 1) uiState.cardPosition + 1 else 0
                                     )
                                 )
                             }
@@ -114,16 +127,25 @@ fun CardDetailScreen(
             }
         }
     ) { innerPadding ->
-
-
-
-        val content = if (currentState.isFront) currentState.contentFront else currentState.contentBack
-
         CardDetailBody(
-            content = content,
+            content = if (uiState.displayFront) uiState.contentFront else uiState.contentBack,
             modifier = modifier
                 .padding(innerPadding)
         )
+        if (deleteConfirmationRequired) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    deleteConfirmationRequired = false
+                    viewModel.deleteCard()
+                },
+                onDeleteCancel = { deleteConfirmationRequired = false }
+            )
+        }
+        LaunchedEffect(uiState.isDeleted) {
+            if (uiState.isDeleted) {
+                onNavigateDeckDetail()
+            }
+        }
 
     }
 }

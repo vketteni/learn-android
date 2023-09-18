@@ -11,30 +11,38 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class CardDetailViewModel(
     private val decksRepository: DecksRepository,
-    cardsRepository: CardsRepository,
+    private val cardsRepository: CardsRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     val cardId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.CARD_ID_ARG])
     val deckId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.DECK_ID_ARG])
-    private val _showFront = MutableStateFlow(true)
+    private val _isDeleted = MutableStateFlow(false)
+    private val _displayFront = MutableStateFlow(true)
     private val _card = cardsRepository.getCardStream(cardId)
-    private val _deck = decksRepository.getDeckStream(deckId)
-    val uiState: StateFlow<CardUiState> = combine(
-        _showFront, _card, _deck
-    ) { showFront, card, deck ->
-        CardUiState(
-            contentFront = card.content.front,
-            contentBack = card.content.back,
-            cardPosition = card.reference.position,
-            deckLength = deck.cardIds.size,
-            created = card.created,
-            actionEnabled = true,
-            isFront = showFront
-        )
+    private val _cardIds = decksRepository.getCardIdsStream(deckId)
+    var uiState: StateFlow<CardUiState> = combine(
+        _displayFront, _card, _cardIds, _isDeleted
+    ) { displayFront, card, cardIds, isCardDeleted ->
+        if (card == null) {
+            CardUiState(isDeleted = true)
+        } else {
+            CardUiState(
+                contentFront = card.content.front,
+                contentBack = card.content.back,
+                cardPosition = card.reference.position,
+                deckLength = cardIds.size,
+                created = card.created,
+                actionEnabled = true,
+                displayFront = displayFront,
+                isDeleted = isCardDeleted
+            )
+        }
     }
         .stateIn(
             scope = viewModelScope,
@@ -46,10 +54,17 @@ class CardDetailViewModel(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    suspend fun getIdByCardPosition(position: Int): String = decksRepository.getDeck(deckId).cardIds[position]
+    fun deleteCard() {
+        viewModelScope.launch {
+            decksRepository.removeDeckCardCrossRef(deckId, cardId)
+            cardsRepository.deleteCard(cardId)
+            _isDeleted.value = true
+        }
+    }
+    suspend fun getIdByCardPosition(position: Int): String = decksRepository.getCardIdsStream(deckId).first()[position]
 
     fun switchSides() {
-        _showFront.value = !_showFront.value
+        _displayFront.value = !_displayFront.value
     }
 
 }

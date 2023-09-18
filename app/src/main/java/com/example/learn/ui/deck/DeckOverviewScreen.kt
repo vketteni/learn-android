@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,16 +25,16 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun DeckOverviewScreen(
     onNavigateDeckDetail: (deckId: String) -> Unit,
-    onNavigateDeckEntry: () -> Unit,
+    onNavigateDeckAddEdit: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeckOverviewViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Scaffold(
         topBar = {
-            LearnTopBar(title = stringResource(R.string.decks_overview_title), canNavigateBack = false) },
+            LearnTopBar(title = R.string.decks_overview_title, canNavigateBack = false) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavigateDeckEntry() },
+                onClick = { onNavigateDeckAddEdit() },
                 modifier = Modifier
                     .navigationBarsPadding()
                     .padding(16.dp) // Add padding to the FAB
@@ -88,7 +87,7 @@ fun DeckOverviewBody(
             modifier = modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
         ) {
-            items(items = localDeckList, key = { it.id }) { item ->
+            items(items = localDeckList, key = { it.deckId }) { item ->
                 DeckCard(deck = item, onNavigateDeck = onNavigateDeckDetail)
                 Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
             }
@@ -105,7 +104,7 @@ fun DeckCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onNavigateDeck(deck.id) }
+            .clickable { onNavigateDeck(deck.deckId) }
             .padding(vertical = 16.dp, horizontal = 16.dp) // Add padding to the Row
     ) {
         Text(

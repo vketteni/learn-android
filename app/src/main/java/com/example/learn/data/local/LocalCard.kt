@@ -6,7 +6,7 @@ import java.util.*
 @Entity(tableName = "cards")
 data class LocalCard(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    val cardId: String = UUID.randomUUID().toString(),
     val content: CardContent,
     val reference: CardReference,
     val created: Long = System.currentTimeMillis(),

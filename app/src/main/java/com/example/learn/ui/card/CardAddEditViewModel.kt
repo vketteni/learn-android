@@ -10,8 +10,6 @@ import com.example.learn.data.CardsRepository
 import com.example.learn.data.DecksRepository
 import com.example.learn.data.local.CardContent
 import com.example.learn.data.local.CardReference
-import com.example.learn.data.local.LocalCard
-import com.example.learn.data.local.LocalDeck
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.launch
 
@@ -47,20 +45,11 @@ class CardAddEditViewModel(
 
     private fun createCard() {
         viewModelScope.launch {
-            val deck = decksRepository.getDeck(deckId)
             val card = cardsRepository.createCard(
                 CardContent(cardUiState.contentFront, cardUiState.contentBack),
-                deck.id
+                deckId
             )
-            val cardIds: MutableList<String> = deck.cardIds.toMutableList()
-            cardIds.add(card.id)
-            decksRepository.updateDeck(
-                LocalDeck(
-                    id = deck.id,
-                    title = deck.title,
-                    cardIds = cardIds,
-                )
-            )
+            decksRepository.addDeckCardCrossRef(deckId, card.cardId)
         }
     }
 
@@ -69,11 +58,11 @@ class CardAddEditViewModel(
             throw RuntimeException("updateCard() was called but card is new.")
         }
         viewModelScope.launch {
+            val card = cardsRepository.getCard(cardId)
             cardsRepository.updateCard(
-                LocalCard(
-                    id = cardId,
+                card.copy(
                     content = CardContent(cardUiState.contentFront, cardUiState.contentBack),
-                    reference = CardReference(cardUiState.cardPosition, cardUiState.cardTitle),
+                    reference = CardReference(cardUiState.cardPosition, cardUiState.cardTitle)
                 )
             )
         }

@@ -13,11 +13,18 @@ interface AppContainer {
 class AppDataContainer(private val context: Context) : AppContainer {
 
     override val decksRepository: DecksRepository by lazy {
-        OfflineDecksRepository(LearnDatabase.getDatabase(context).deckDao())
+        OfflineDecksRepository(
+            LearnDatabase.getDatabase(context).deckDao(),
+            LearnDatabase.getDatabase(context).deckCardCrossRefDao()
+        )
     }
 
     override val cardsRepository: CardsRepository by lazy {
-        OfflineCardsRepository(LearnDatabase.getDatabase(context).cardDao(), LearnDatabase.getDatabase(context).deckDao())
+        OfflineCardsRepository(
+            LearnDatabase.getDatabase(context).cardDao(),
+            LearnDatabase.getDatabase(context).deckDao(),
+            LearnDatabase.getDatabase(context).deckCardCrossRefDao()
+        )
     }
 
 }

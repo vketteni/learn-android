@@ -25,7 +25,7 @@ import com.example.learn.ui.AppViewModelProvider
 
 @Composable
 fun CardAddEditScreen(
-    @StringRes topBarTitle: Int,
+    @StringRes title: Int,
     onNavigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -33,7 +33,7 @@ fun CardAddEditScreen(
 ) {
     Scaffold(
         topBar = {
-            LearnTopBar(title = stringResource(id = topBarTitle), canNavigateBack = true, navigateUp = onNavigateUp)
+            LearnTopBar(title = title, canNavigateBack = true, navigateUp = onNavigateUp)
         },
 
     ) { innerPadding ->

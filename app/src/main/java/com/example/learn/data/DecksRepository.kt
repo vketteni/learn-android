@@ -11,8 +11,12 @@ interface DecksRepository {
 
     suspend fun getDeck(deckId: String): LocalDeck
 
-    suspend fun createDeck(title: String): LocalDeck
+    suspend fun createDeck(deck: LocalDeck): LocalDeck
 
+    suspend fun deleteDeck(deckId: String)
     suspend fun updateDeck(deck: LocalDeck)
 
+    suspend fun addDeckCardCrossRef(deckId: String, cardId: String)
+    suspend fun removeDeckCardCrossRef(deckId: String, cardId: String)
+    fun getCardIdsStream(deckId: String): Flow<List<String>>
 }
