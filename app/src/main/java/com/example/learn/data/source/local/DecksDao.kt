@@ -1,4 +1,4 @@
-package com.example.learn.data.local
+package com.example.learn.data.source.local
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
@@ -18,14 +18,14 @@ interface DecksDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(localDeck: LocalDeck)
 
-    @Delete
-    suspend fun delete(localDeck: LocalDeck)
+    @Query("DELETE FROM decks WHERE :deckId = deckId")
+    suspend fun deleteById(deckId: String)
 
     @Query("SELECT * from decks WHERE deckId = :deckId")
     suspend fun getDeck(deckId: String): LocalDeck?
 
-//    @Query("SELECT * from decks WHERE :cardId IN(cardIds)")
-//    suspend fun getDeckByCardId(cardId: String): LocalDeck?
+    @Query("SELECT * from decks")
+    suspend fun getAll(): List<LocalDeck>
 
     @Query("SELECT * FROM decks WHERE deckId IN (SELECT deckId FROM deck_card_cross_ref WHERE :cardId = cardId)")
     suspend fun getDeckFromCard(cardId: String): LocalDeck?

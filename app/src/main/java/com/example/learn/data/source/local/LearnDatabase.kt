@@ -1,13 +1,12 @@
-package com.example.learn.data.local
+package com.example.learn.data.source.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 
-@Database(entities = [LocalDeck::class, LocalCard::class, DeckCardCrossRef::class], version = 1, exportSchema = false)
-@TypeConverters(CardIdsTypeConverter::class, CardContentTypeConverter::class, CardReferenceTypeConverter::class)
+@Database(entities = [LocalDeck::class, LocalCard::class, DeckCardCrossRef::class], version = 2, exportSchema = false)
+
 abstract class LearnDatabase : RoomDatabase() {
     abstract fun deckDao(): DecksDao
     abstract fun cardDao(): CardsDao

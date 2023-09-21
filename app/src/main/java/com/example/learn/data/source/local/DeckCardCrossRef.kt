@@ -1,4 +1,4 @@
-package com.example.learn.data.local
+package com.example.learn.data.source.local
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

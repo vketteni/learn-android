@@ -1,5 +1,6 @@
 package com.example.learn.ui.deck
 
+import Deck
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnTopBar
 import com.example.learn.R
-import com.example.learn.data.local.LocalDeck
 import com.example.learn.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.StateFlow
 
@@ -62,7 +62,7 @@ fun DeckOverviewScreen(
         // Alternatively: val currentState by viewModel.deckOverviewUiState.collectAsState()
 
         DeckOverviewBody(
-            localDeckList = currentState.decks,
+            deckList = currentState.decks,
             onNavigateDeckDetail = onNavigateDeckDetail,
             modifier = modifier
                 .padding(innerPadding)
@@ -72,11 +72,11 @@ fun DeckOverviewScreen(
 
 @Composable
 fun DeckOverviewBody(
-    localDeckList: List<LocalDeck>,
+    deckList: List<Deck>,
     onNavigateDeckDetail: (deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (localDeckList.isEmpty()) {
+    if (deckList.isEmpty()) {
         Text(
             text = "No decks existent, create a deck?",
             style = MaterialTheme.typography.titleMedium,
@@ -87,7 +87,7 @@ fun DeckOverviewBody(
             modifier = modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
         ) {
-            items(items = localDeckList, key = { it.deckId }) { item ->
+            items(items = deckList, key = { it.deckId }) { item ->
                 DeckCard(deck = item, onNavigateDeck = onNavigateDeckDetail)
                 Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
             }
@@ -97,7 +97,7 @@ fun DeckOverviewBody(
 
 @Composable
 fun DeckCard(
-    deck: LocalDeck,
+    deck: Deck,
     onNavigateDeck: (deckId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {

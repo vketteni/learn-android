@@ -1,4 +1,4 @@
-package com.example.learn.data.local
+package com.example.learn.data.source.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -9,7 +9,6 @@ data class LocalDeck(
     @PrimaryKey
     val deckId: String = UUID.randomUUID().toString(),
     val title: String,
-//    val cardIds: List<String> = listOf(),
     val created: Long = System.currentTimeMillis(),
 )
 

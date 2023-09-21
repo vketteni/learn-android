@@ -1,5 +1,7 @@
 package com.example.learn.ui.card
 
+import CardContent
+import CardReference
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,8 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.CardsRepository
 import com.example.learn.data.DecksRepository
-import com.example.learn.data.local.CardContent
-import com.example.learn.data.local.CardReference
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.launch
 

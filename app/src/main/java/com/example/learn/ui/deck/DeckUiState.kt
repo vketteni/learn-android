@@ -1,6 +1,6 @@
 package com.example.learn.ui.deck
 
-import com.example.learn.data.local.LocalDeck
+import com.example.learn.data.source.local.LocalDeck
 
 data class DeckUiState(
     val title: String = "",

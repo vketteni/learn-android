@@ -1,10 +1,10 @@
 package com.example.learn.ui.deck
 
 
+import Deck
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.DecksRepository
-import com.example.learn.data.local.LocalDeck
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -35,4 +35,4 @@ class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
 /**
  * Ui state for DeckOverviewScreen
  */
-data class DeckOverviewUiState(val decks: List<LocalDeck> = listOf())
+data class DeckOverviewUiState(val decks: List<Deck> = listOf())

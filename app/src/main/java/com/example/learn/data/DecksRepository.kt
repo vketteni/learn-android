@@ -1,20 +1,20 @@
 package com.example.learn.data
 
-import com.example.learn.data.local.LocalDeck
+import Deck
 import kotlinx.coroutines.flow.Flow
 
 interface DecksRepository {
 
-    fun getDecksStream(): Flow<List<LocalDeck>>
+    fun getDecksStream(): Flow<List<Deck>>
 
-    fun getDeckStream(deckId: String): Flow<LocalDeck>
+    fun getDeckStream(deckId: String): Flow<Deck>
 
-    suspend fun getDeck(deckId: String): LocalDeck
+    suspend fun getDeck(deckId: String): Deck
 
-    suspend fun createDeck(deck: LocalDeck): LocalDeck
+    suspend fun createDeck(title: String): String
 
     suspend fun deleteDeck(deckId: String)
-    suspend fun updateDeck(deck: LocalDeck)
+    suspend fun updateDeck(deck: Deck)
 
     suspend fun addDeckCardCrossRef(deckId: String, cardId: String)
     suspend fun removeDeckCardCrossRef(deckId: String, cardId: String)

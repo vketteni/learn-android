@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learn.data.DecksRepository
-import com.example.learn.data.local.LocalDeck
 import com.example.learn.ui.navigation.LearnDestinationArguments
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,7 +56,7 @@ class DeckAddEditViewModel(
 
     private fun createDeck() {
         viewModelScope.launch {
-            decksRepository.createDeck(LocalDeck(title = _uiState.value.title))
+            decksRepository.createDeck(_uiState.value.title)
         }
     }
 

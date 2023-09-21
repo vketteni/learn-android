@@ -1,16 +1,16 @@
 package com.example.learn.data
 
-import com.example.learn.data.local.CardContent
-import com.example.learn.data.local.CardReference
-import com.example.learn.data.local.LocalCard
+import Card
+import CardContent
+import CardReference
 import kotlinx.coroutines.flow.Flow
 
 interface CardsRepository {
 
-    fun getCardStream(cardId: String): Flow<LocalCard?>
-    suspend fun getCard(cardId: String): LocalCard
-    suspend fun updateCard(card: LocalCard)
+    fun getCardStream(cardId: String): Flow<Card?>
+    suspend fun getCard(cardId: String): Card
+    suspend fun updateCard(card: Card)
     suspend fun deleteCard(cardId: String)
-    suspend fun createCard(content: CardContent, deckId: String): LocalCard
+    suspend fun createCard(content: CardContent, deckId: String): Card
     suspend fun getCardReference(cardId: String): CardReference
 }
