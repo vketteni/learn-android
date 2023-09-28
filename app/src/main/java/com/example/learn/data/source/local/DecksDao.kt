@@ -18,6 +18,8 @@ interface DecksDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(localDeck: LocalDeck)
 
+    @Query("DELETE FROM decks")
+    suspend fun deleteAll()
     @Query("DELETE FROM decks WHERE :deckId = deckId")
     suspend fun deleteById(deckId: String)
 

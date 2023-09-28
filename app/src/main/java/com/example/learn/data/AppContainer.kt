@@ -22,6 +22,7 @@ class AppDataContainer(private val context: Context) : AppContainer {
     override val decksRepository: DecksRepository by lazy {
         DefaultDecksRepository(
             LearnDatabase.getDatabase(context).deckDao(),
+            LearnDatabase.getDatabase(context).cardDao(),
             LearnDatabase.getDatabase(context).deckCardCrossRefDao(),
             LearnNetworkDataSource(),
             Dispatchers.IO,

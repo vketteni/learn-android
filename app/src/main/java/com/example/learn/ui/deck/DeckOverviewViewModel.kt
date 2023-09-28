@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /**
  * View Model to
  */
-class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
+class DeckOverviewViewModel(
+    private val decksRepository: DecksRepository): ViewModel() {
     /**
      * Holds current deck ui state
      */
@@ -29,6 +31,11 @@ class DeckOverviewViewModel(decksRepository: DecksRepository): ViewModel() {
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
+    fun refresh() {
+        viewModelScope.launch {
+            decksRepository.refresh()
+        }
+    }
 
 }
 

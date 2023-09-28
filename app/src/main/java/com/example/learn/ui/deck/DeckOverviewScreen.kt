@@ -16,8 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.learn.LearnTopBar
-import com.example.learn.R
+import com.example.learn.DeckOverviewTopBar
 import com.example.learn.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.StateFlow
 
@@ -30,8 +29,7 @@ fun DeckOverviewScreen(
     viewModel: DeckOverviewViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Scaffold(
-        topBar = {
-            LearnTopBar(title = R.string.decks_overview_title, canNavigateBack = false) },
+        topBar = { DeckOverviewTopBar(onRefresh = { viewModel.refresh() })},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onNavigateDeckAddEdit() },

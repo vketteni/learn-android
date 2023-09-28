@@ -11,9 +11,11 @@ interface DeckCardCrossRefDao {
     suspend fun getAll(): List<DeckCardCrossRef>
     @Insert
     suspend fun insertCrossRef(crossRef: DeckCardCrossRef)
+    @Query("DELETE FROM deck_card_cross_ref")
+    suspend fun deleteAll()
     @Delete
     suspend fun deleteCrossRef(crossRef: DeckCardCrossRef)
 
     @Query("DELETE FROM deck_card_cross_ref WHERE :deckId = deckId")
-    suspend fun deleteAll(deckId: String)
+    suspend fun deleteByDeck(deckId: String)
 }

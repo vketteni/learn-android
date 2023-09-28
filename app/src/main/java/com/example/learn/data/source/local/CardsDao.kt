@@ -17,6 +17,8 @@ interface CardsDao {
 
     @Query("SELECT * from cards WHERE cardId = :cardId")
     suspend fun getCard(cardId: String) : LocalCard?
+    @Query("DELETE FROM cards")
+    suspend fun deleteAll()
     @Query("DELETE FROM cards WHERE cardId = :cardId")
     suspend fun deleteById(cardId: String)
     @Query("SELECT position from cards WHERE cardId = :cardId")

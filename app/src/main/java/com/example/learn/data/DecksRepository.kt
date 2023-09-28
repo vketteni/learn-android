@@ -19,4 +19,6 @@ interface DecksRepository {
     suspend fun addDeckCardCrossRef(deckId: String, cardId: String)
     suspend fun removeDeckCardCrossRef(deckId: String, cardId: String)
     fun getCardIdsStream(deckId: String): Flow<List<String>>
+
+    suspend fun refresh()
 }

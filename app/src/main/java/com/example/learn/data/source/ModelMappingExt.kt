@@ -21,6 +21,9 @@ fun LocalDeck.toNetwork() = NetworkDeck(
     created = created,
     title = title
 )
+fun NetworkDeck.toLocal() = LocalDeck(
+    deckId, title, created
+)
 
 fun List<LocalDeck>.toNetworkDecks() = map(LocalDeck::toNetwork)
 
@@ -33,11 +36,17 @@ fun Card.toLocal() = LocalCard(
     created = created
 )
 
+fun NetworkCard.toLocal() = LocalCard(
+    cardId, frontContent, backContent, title, position, created
+)
+
 fun DeckCardCrossRef.toNetwork() = NetworkDeckCardCrossRef(
     deckId = deckId,
     cardId = cardId
 )
-
+fun NetworkDeckCardCrossRef.toExternal() = DeckCardCrossRef(
+    deckId, cardId
+)
 fun List<DeckCardCrossRef>.toNetworkCrossRefs() = map(DeckCardCrossRef::toNetwork)
 
 fun LocalDeck.toExternal() = Deck(

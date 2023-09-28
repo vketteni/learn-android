@@ -1,6 +1,7 @@
 package com.example.learn.data
 
 import Deck
+import com.example.learn.data.source.local.CardsDao
 import com.example.learn.data.source.local.DeckCardCrossRef
 import com.example.learn.data.source.local.DeckCardCrossRefDao
 import com.example.learn.data.source.local.DecksDao
@@ -19,6 +20,7 @@ import java.util.UUID
 
 class DefaultDecksRepository(
     private val decksDao: DecksDao,
+    private val cardsDao: CardsDao,
     private val deckCardCrossRefDao: DeckCardCrossRefDao,
     private val networkDataSource: NetworkDataSource,
     private val dispatcher: CoroutineDispatcher,
@@ -38,7 +40,7 @@ class DefaultDecksRepository(
         return deck.deckId
     }
     override suspend fun deleteDeck(deckId: String) {
-        deckCardCrossRefDao.deleteAll(deckId)
+        deckCardCrossRefDao.deleteByDeck(deckId)
         decksDao.deleteById(deckId)
         saveCrossRefsToNetwork()
         saveDecksToNetwork()
@@ -90,6 +92,20 @@ class DefaultDecksRepository(
             } catch (e: Exception) {
                 // handle exception by exposing flow to top level ui state holder to display toast message
             }
+        }
+    }
+
+    override suspend fun refresh() {
+        withContext(dispatcher) {
+            val remoteDecks = networkDataSource.loadDecks()
+            val remoteCards = networkDataSource.loadCards()
+            val remoteDeckCardRefs = networkDataSource.loadDeckCardCrossRefs()
+            deckCardCrossRefDao.deleteAll()
+            decksDao.deleteAll()
+            cardsDao.deleteAll()
+            remoteDecks.forEach { decksDao.insert(it.toLocal()) }
+            remoteCards.forEach { cardsDao.insert(it.toLocal())}
+            remoteDeckCardRefs.forEach { deckCardCrossRefDao.insertCrossRef(it.toExternal())}
         }
     }
 }
