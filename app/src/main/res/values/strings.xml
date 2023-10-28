@@ -19,4 +19,5 @@
     <string name="deck_edit_title">Edit deck</string>
     <string name="dropdown_menu">Dropdown menu</string>
     <string name="decks_overview_refresh">Refresh decks</string>
+    <string name="empty_deck_detail_screen_str">Your deck is empty, create a card?</string>
 </resources>

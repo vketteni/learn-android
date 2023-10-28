@@ -7,15 +7,15 @@ import com.example.learn.data.CardsRepository
 import com.example.learn.data.DecksRepository
 import com.example.learn.ui.card.CardUiReference
 import com.example.learn.ui.navigation.LearnDestinationArguments
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
 data class DeckDetailUiState(
     val cardReferences: List<CardUiReference> = listOf(),
+    var selectedCard: CardUiReference? = null,
     val loading: Boolean = false,
 )
 
@@ -26,21 +26,38 @@ class DeckDetailViewModel(
     ): ViewModel() {
 
     val deckId: String = checkNotNull(savedStateHandle[LearnDestinationArguments.DECK_ID_ARG])
-    val uiState: StateFlow<DeckDetailUiState> = decksRepository.getCardIdsStream(deckId)
-        .map { DeckDetailUiState(it.map { cardId ->
-            val cardReference = cardsRepository.getCardReference(cardId)
-            CardUiReference(cardId, cardReference.title, cardReference.position)})
+
+    private val _uiState: MutableStateFlow<DeckDetailUiState> = MutableStateFlow(DeckDetailUiState())
+    val uiState: StateFlow<DeckDetailUiState> = _uiState
+
+    init {
+        viewModelScope.launch {
+            decksRepository.getCardIdsStream(deckId)
+                .map { cardIds ->
+                    cardIds.map { cardId ->
+                        val cardReference = cardsRepository.getCardReference(cardId)
+                        CardUiReference(cardId, cardReference.title, cardReference.position)
+                    }
+                }
+                .collect { cardReferences ->
+                    val currentState = _uiState.value
+                    val updatedState = currentState.copy(cardReferences = cardReferences)
+                    _uiState.value = updatedState
+                }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = DeckDetailUiState()
-        )
+    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
+    fun onCardSelect(card: CardUiReference) {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val updatedState = currentState.copy(selectedCard = card)
+            _uiState.value = updatedState
+        }
+    }
     fun deleteDeck() {
         viewModelScope.launch {
             decksRepository.deleteDeck(deckId)

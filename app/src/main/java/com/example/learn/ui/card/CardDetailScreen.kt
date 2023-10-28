@@ -1,10 +1,9 @@
 package com.example.learn.ui.card
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,12 +11,13 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,8 +27,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.learn.LearnBottomAppBar
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
@@ -76,62 +79,62 @@ fun CardDetailScreen(
             )
         },
         bottomBar = {
-            BottomAppBar() {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                onNavigateCardDetail(
-                                    viewModel.getIdByCardPosition(
-                                        position =  if (uiState.cardPosition != 0) uiState.cardPosition - 1 else uiState.deckLength - 1
-                                    )
-                                )
-                            }
-                        } ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            LearnBottomAppBar {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        onNavigateCardDetail(
+                            viewModel.getIdByCardPosition(
+                                position =  if (uiState.cardPosition != 0) uiState.cardPosition - 1 else uiState.deckLength - 1
                             )
-                        }
-                        IconButton(onClick = { viewModel.switchSides() }) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowUp,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                onNavigateCardDetail(
-                                    viewModel.getIdByCardPosition(
-                                        position = if (uiState.cardPosition != uiState.deckLength - 1) uiState.cardPosition + 1 else 0
-                                    )
-                                )
-                            }
-                        } ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        )
                     }
+                } ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = { viewModel.switchSides() }) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowUp,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        onNavigateCardDetail(
+                            viewModel.getIdByCardPosition(
+                                position = if (uiState.cardPosition != uiState.deckLength - 1) uiState.cardPosition + 1 else 0
+                            )
+                        )
+                    }
+                } ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
-        }
+        },
+//        containerColor = Color.Yellow
     ) { innerPadding ->
-        CardDetailBody(
-            content = if (uiState.displayFront) uiState.contentFront else uiState.contentBack,
-            modifier = modifier
-                .padding(innerPadding)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 20.dp)
+                .padding(bottom = innerPadding.calculateBottomPadding())
+                .padding(top = innerPadding.calculateTopPadding()),
+        ) {
+            CardDetailBody(
+                content = if (uiState.displayFront) uiState.contentFront else uiState.contentBack,
+                modifier = modifier
+                    .fillMaxSize()
+            )
+        }
+
         if (deleteConfirmationRequired) {
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
@@ -156,17 +159,36 @@ fun CardDetailBody(
     modifier: Modifier = Modifier
 ) {
     Box(
-        contentAlignment = Alignment.TopCenter,
+        contentAlignment = Alignment.TopStart,
         modifier = modifier
             .fillMaxSize()
     ) {
-        TextField(
-            value = content,
-            onValueChange = {},
-            modifier = modifier,
-            readOnly = true,
-            minLines = 10
-        )
+        CardDetailCard(content = content)
     }
 
+}
+
+@Composable
+fun CardDetailCard(
+    content: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(),
+        elevation = CardDefaults.cardElevation(8.dp),
+        border = BorderStroke(1.dp, Color.Gray)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = content,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
 }

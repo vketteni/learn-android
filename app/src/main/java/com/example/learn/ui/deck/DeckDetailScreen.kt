@@ -1,8 +1,12 @@
 package com.example.learn.ui.deck
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,7 +16,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,15 +28,21 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.learn.LearnBottomAppBar
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
@@ -97,14 +108,20 @@ fun DeckDetailScreen(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }
-
+        },
+        bottomBar = {
+            LearnBottomAppBar {}
+        },
+        containerColor = Color.Yellow
     ) { innerPadding ->
-
         DeckDetailBody(
             modifier = modifier
-                .padding(innerPadding),
+                .fillMaxSize()
+                .padding(all = 36.dp)
+                .padding(bottom = innerPadding.calculateBottomPadding())
+                .padding(top = innerPadding.calculateTopPadding()),
             cards = uiState.cardReferences,
+            selectedCard = uiState.selectedCard,
             onNavigateCardDetail = onNavigateCardDetail
         )
     }
@@ -113,23 +130,51 @@ fun DeckDetailScreen(
 @Composable
 fun DeckDetailBody(
     cards: List<CardUiReference>,
+    selectedCard: CardUiReference?,
     onNavigateCardDetail: (cardId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (cards.isEmpty()) {
-        Text(
-            text = "Your deck has no cards, create a card?",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(16.dp) // Add padding to the Text
-        )
-    } else {
-        LazyColumn(modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp) // Add padding to the LazyColumn
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            items(items=cards, key = { it.cardId }) { card ->
-                CardItem(card, onNavigateCardDetail)
-                Divider(modifier = Modifier.padding(vertical = 8.dp)) // Add padding to the Divider
-            }
+            Text(
+                text = stringResource(R.string.empty_deck_detail_screen_str),
+                fontSize = TextUnit(10F, TextUnitType.Em),
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Center,
+            )
+        }
+    } else {
+        CardsList(
+            cards = cards,
+            selectedCard = selectedCard,
+            onNavigateCardDetail = onNavigateCardDetail,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun CardsList(
+    cards: List<CardUiReference>,
+    selectedCard: CardUiReference?,
+    onNavigateCardDetail: (cardId: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sortedCards = cards.sortedBy { it.position }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = modifier.fillMaxSize()
+    ) {
+        items(items=sortedCards, key = { it.cardId }) { card ->
+            CardItem(
+                card = card,
+                onNavigateCardDetail = onNavigateCardDetail,
+                isSelected = selectedCard == card
+                )
         }
     }
 }
@@ -138,18 +183,44 @@ fun DeckDetailBody(
 fun CardItem(
     card: CardUiReference,
     onNavigateCardDetail: (cardId: String) -> Unit,
+    isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier= modifier
-        .clickable { onNavigateCardDetail(card.cardId) }
-        .fillMaxWidth()
-        .padding(vertical = 16.dp, horizontal = 16.dp)
+    val viewModel = viewModel<DeckDetailViewModel>()
+    val borderColor = if (isSelected) Color.Black else Color.Gray
+    val backgroundColor = if (isSelected) Color.DarkGray else Color.LightGray
+    val contentColor = if (isSelected) Color.White else Color.Black
+    val fontSize = 28.sp
+    val position = "${card.position + 1}."
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Card(
+        modifier = modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null, // Disable ripple effect
+                enabled = true, // Set to true to enable the click
+                onClickLabel = null, // Optional label for accessibility
+                role = null, // Optional role for accessibility
+            ) {
+                if (isSelected) onNavigateCardDetail(card.cardId)
+                else viewModel.onCardSelect(card)
+            },
+        colors = CardDefaults.cardColors(),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, borderColor),
+        elevation = CardDefaults.cardElevation(8.dp),
     ) {
-        Text(
-            text = card.title,
-            modifier = Modifier.weight(1.5f),
-            fontWeight = FontWeight.Bold
-        )
+        Row {
+            Text(
+                text = card.title,
+                //                fontWeight = FontWeight.Bold,
+                fontSize = fontSize,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            )
+        }
     }
 }
 
