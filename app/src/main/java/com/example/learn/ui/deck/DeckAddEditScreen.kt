@@ -5,28 +5,42 @@ package com.example.learn.ui.deck
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.colorspace.ColorSpace
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.learn.LearnBottomAppBar
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
+import kotlinx.coroutines.launch
 
 @Composable
 fun DeckAddEditScreen(
@@ -36,14 +50,42 @@ fun DeckAddEditScreen(
     modifier: Modifier = Modifier,
     viewModel: DeckAddEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
-        topBar = {
-            LearnTopBar(title = title, canNavigateBack = true, navigateUp = navigateUp)
-        },
+        topBar = {},
+        bottomBar = {
+            LearnBottomAppBar {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        navigateUp()
+                    }
+                } ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        tint = colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.saveDeck()
+                        }
+                    },
+                    enabled = uiState.actionEnabled) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint =
+                        if (uiState.actionEnabled) colorScheme.onSurfaceVariant
+                        else colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-        DeckEntryBody(
+        DeckAddEditBody(
             deckUiState = uiState,
             onDeckValueChange = viewModel::updateUiState,
             onSaveClick = viewModel::saveDeck,
@@ -58,7 +100,7 @@ fun DeckAddEditScreen(
 }
 
 @Composable
-fun DeckEntryBody(
+fun DeckAddEditBody(
     deckUiState: DeckAddEditUiState,
     onDeckValueChange: (DeckAddEditUiState) -> Unit,
     onSaveClick: () -> Unit,
@@ -67,9 +109,9 @@ fun DeckEntryBody(
     // deck title input field
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxHeight()
             .padding(horizontal = 16.dp, vertical = 16.dp), // Add padding to the Column
-        verticalArrangement = Arrangement.spacedBy(32.dp),
+        verticalArrangement = Arrangement.Center,
 
     ) {
         DeckInputForm(
@@ -77,15 +119,8 @@ fun DeckEntryBody(
             onValueChange = onDeckValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp) // Add padding to the DeckInputForm
         )
-        Button(
-            onClick = onSaveClick,
-            enabled = deckUiState.actionEnabled,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.save_action))
-        }
+
     }
 }
 
@@ -100,25 +135,21 @@ fun DeckInputForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp) // Add padding to the Column
+//            .padding(horizontal = 16.dp) // Add padding to the Column
             .padding(vertical = 16.dp) // Add padding to the Column
         ,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = deckUiState.title,
             onValueChange = { onValueChange(deckUiState.copy(title = it)) },
-            label = { Text(stringResource(R.string.deck_title_req)) },
-            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = stringResource(R.string.deck_title_req))},
             enabled = enabled,
             singleLine = true,
             maxLines = 1,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Gray, // Set the outline color for focused state to gray
-                unfocusedBorderColor = MaterialTheme.colors.onSurface
+            colors = TextFieldColors(
+                cursorColor = Color.LightGray
             )
         )
-
-
     }
 }
