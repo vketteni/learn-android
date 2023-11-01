@@ -5,23 +5,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.learn.LearnBottomAppBar
+import com.example.learn.LearnOutlinedTextField
 
-import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardAddEditScreen(
@@ -31,16 +39,48 @@ fun CardAddEditScreen(
     modifier: Modifier = Modifier,
     viewModel: CardAddEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    Scaffold(
-        topBar = {
-            LearnTopBar(title = title, canNavigateBack = true, navigateUp = onNavigateUp)
-        },
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+
+        bottomBar = {
+            LearnBottomAppBar {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        onNavigateUp()
+                    }
+                } ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.saveCard()
+                        }
+                    },
+                    enabled = uiState.actionEnabled) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint =
+                        if (uiState.actionEnabled) androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                        else androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
     ) { innerPadding ->
 
-        CardAddEditContent(
+        CardAddEditBody(
             onNavigateBack = onNavigateBack,
-            cardUiState = viewModel.cardUiState,
+            contentFront = uiState.contentFront,
+            contentBack = uiState.contentBack,
             onValueChange = viewModel::updateUiState,
             onSaveClick = viewModel::saveCard,
             modifier = modifier
@@ -50,9 +90,10 @@ fun CardAddEditScreen(
 }
 
 @Composable
-fun CardAddEditContent(
+fun CardAddEditBody(
     onNavigateBack: () -> Unit,
-    cardUiState: CardUiState,
+    contentFront: String,
+    contentBack: String,
     onValueChange: (CardUiState) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -65,8 +106,9 @@ fun CardAddEditContent(
         verticalArrangement = Arrangement.spacedBy(32.dp),
 
         ) {
-        CardAddEditForm(
-            cardUiState = cardUiState,
+        CardAddEditForms(
+            cardContentFront = contentFront,
+            cardContentBack = contentBack,
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
@@ -86,8 +128,9 @@ fun CardAddEditContent(
 }
 
 @Composable
-fun CardAddEditForm(
-    cardUiState: CardUiState,
+fun CardAddEditForms(
+    cardContentFront: String,
+    cardContentBack: String,
     onValueChange: (CardUiState) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -106,29 +149,15 @@ fun CardAddEditForm(
             unfocusedBorderColor = MaterialTheme.colors.onSurface,
         )
 
-
-        OutlinedTextField(
-            value = cardUiState.contentFront,
+        LearnOutlinedTextField(
+            value = cardContentFront,
             onValueChange = { onValueChange(cardUiState.copy(contentFront = it)) },
-            label = { Text(stringResource(R.string.card_front_content_textfield_title)) },
-            modifier = Modifier
-                .fillMaxWidth(),
-            enabled = enabled,
-            minLines = 6,
-            colors = textfieldColors,
-            shape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 8.dp, bottomStart = 8.dp)
+            placeholder = stringResource(R.string.card_front_content_textfield_title)
         )
-        OutlinedTextField(
-            value = cardUiState.contentBack,
+        LearnOutlinedTextField(
+            value = cardContentBack,
             onValueChange = { onValueChange(cardUiState.copy(contentBack = it)) },
-            label = { Text(stringResource(R.string.card_back_content_title)) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            minLines = 6,
-            colors = textfieldColors,
-            shape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 8.dp, bottomStart = 8.dp)
+            placeholder = stringResource(R.string.card_back_content_title)
         )
-
-
     }
 }

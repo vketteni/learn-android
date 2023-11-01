@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.learn.LearnBottomAppBar
+import com.example.learn.LearnOutlinedTextField
 import com.example.learn.LearnTopBar
 import com.example.learn.R
 import com.example.learn.ui.AppViewModelProvider
@@ -131,25 +132,13 @@ fun DeckInputForm(
     onValueChange: (DeckAddEditUiState) -> Unit,
     enabled: Boolean = true
 ) {
+    LearnOutlinedTextField(
+        value = deckUiState.title,
+        onValueChange = { onValueChange(deckUiState.copy(title = it)) },
+        placeholder = stringResource(R.string.deck_title_req),
+        enabled = enabled,
+        singleLine = true,
+        maxLines = 1,
+    )
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-//            .padding(horizontal = 16.dp) // Add padding to the Column
-            .padding(vertical = 16.dp) // Add padding to the Column
-        ,
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = deckUiState.title,
-            onValueChange = { onValueChange(deckUiState.copy(title = it)) },
-            placeholder = { Text(text = stringResource(R.string.deck_title_req))},
-            enabled = enabled,
-            singleLine = true,
-            maxLines = 1,
-            colors = TextFieldColors(
-                cursorColor = Color.LightGray
-            )
-        )
-    }
 }
