@@ -2,9 +2,6 @@ package com.example.learn.ui.card
 
 import CardContent
 import CardReference
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,11 +30,13 @@ class CardAddEditViewModel(
         }
     }
 
-    fun updateUiState(cardContentFront: String, cardContentBack: String) {
+    fun updateUiState(content: CardUiContent) {
         _uiState.update {
-            newCardUiState.copy(
-                actionEnabled = newCardUiState.isValid()
+            val newCardUiState = _uiState.value.copy(
+                contentFront = content.front,
+                contentBack = content.back,
             )
+            newCardUiState.copy(actionEnabled = newCardUiState.isValid())
         }
     }
 

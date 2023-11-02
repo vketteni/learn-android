@@ -20,4 +20,7 @@
     <string name="dropdown_menu">Dropdown menu</string>
     <string name="decks_overview_refresh">Refresh decks</string>
     <string name="empty_deck_detail_screen_str">Your deck is empty, create a card?</string>
+    <string name="deck_add_edit_text_field_title">Choose Deck Title</string>
+    <string name="card_add_edit_front_content_text_field_title">Front Content</string>
+    <string name="card_add_edit_back_content_text_field_title">Back Content</string>
 </resources>

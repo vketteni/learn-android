@@ -14,20 +14,21 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LearnBottomAppBar(
+    contentAlignment: Alignment = Alignment.Center,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
     actions: @Composable (RowScope.() -> Unit) = {}
 ) {
     BottomAppBar(
         containerColor = Color.LightGray,
         tonalElevation = 1.dp,
-//        actions = actions
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            contentAlignment = contentAlignment
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = horizontalArrangement,
                 content = actions
             )
         }
