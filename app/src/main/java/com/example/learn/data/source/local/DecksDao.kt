@@ -32,6 +32,5 @@ interface DecksDao {
     @Query("SELECT * FROM decks WHERE deckId IN (SELECT deckId FROM deck_card_cross_ref WHERE :cardId = cardId)")
     suspend fun getDeckFromCard(cardId: String): LocalDeck?
 
-    @Query("SELECT cardId FROM deck_card_cross_ref WHERE :deckId = deckId")
-    fun getCardIdsStream(deckId: String): Flow<List<String>>
+
 }

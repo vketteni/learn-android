@@ -4,6 +4,7 @@ import Card
 import CardContent
 import CardReference
 import com.example.learn.data.source.local.CardsDao
+import com.example.learn.data.source.local.DeckCardCrossRefDao
 import com.example.learn.data.source.local.DecksDao
 import com.example.learn.data.source.local.LocalCard
 import com.example.learn.data.source.network.NetworkDataSource
@@ -21,7 +22,7 @@ import kotlinx.coroutines.withContext
 
 class DefaultCardsRepository(
     private val cardsDao: CardsDao,
-    private val decksDao: DecksDao,
+    private val deckCardCrossRefDao: DeckCardCrossRefDao,
     private val networkDataSource: NetworkDataSource,
     private val dispatcher: CoroutineDispatcher,
     private val scope: CoroutineScope
@@ -41,7 +42,7 @@ class DefaultCardsRepository(
         saveCardsToNetwork()
     }
     override suspend fun createCard(content: CardContent, deckId: String): Card {
-        val position: Int = decksDao.getCardIdsStream(deckId).first().size
+        val position: Int = deckCardCrossRefDao.getReferencedCardIdsStream(deckId).first().size
         val title: String = takeTitle(content.front)
         val card = LocalCard(
             frontContent = content.front,

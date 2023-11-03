@@ -67,7 +67,7 @@ class DefaultDecksRepository(
         saveCrossRefsToNetwork()
     }
 
-    override fun getCardIdsStream(deckId: String): Flow<List<String>> = decksDao.getCardIdsStream(deckId)
+    override fun getCardIdsStream(deckId: String): Flow<List<String>> = deckCardCrossRefDao.getReferencedCardIdsStream(deckId)
     private fun saveDecksToNetwork() {
         scope.launch {
             try {

@@ -33,7 +33,7 @@ class AppDataContainer(private val context: Context) : AppContainer {
     override val cardsRepository: CardsRepository by lazy {
         DefaultCardsRepository(
             LearnDatabase.getDatabase(context).cardDao(),
-            LearnDatabase.getDatabase(context).deckDao(),
+            LearnDatabase.getDatabase(context).deckCardCrossRefDao(),
             LearnNetworkDataSource(),
             Dispatchers.IO,
             CoroutineScope(Dispatchers.IO)

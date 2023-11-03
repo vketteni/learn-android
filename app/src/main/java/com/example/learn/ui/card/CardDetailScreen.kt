@@ -83,9 +83,7 @@ fun CardDetailScreen(
                 IconButton(onClick = {
                     coroutineScope.launch {
                         onNavigateCardDetail(
-                            viewModel.getIdByCardPosition(
-                                position =  if (uiState.cardPosition != 0) uiState.cardPosition - 1 else uiState.deckLength - 1
-                            )
+                            viewModel.getAdjacentCardId(forward = false)
                         )
                     }
                 } ) {
@@ -105,9 +103,7 @@ fun CardDetailScreen(
                 IconButton(onClick = {
                     coroutineScope.launch {
                         onNavigateCardDetail(
-                            viewModel.getIdByCardPosition(
-                                position = if (uiState.cardPosition != uiState.deckLength - 1) uiState.cardPosition + 1 else 0
-                            )
+                            viewModel.getAdjacentCardId(forward = true)
                         )
                     }
                 } ) {

@@ -71,7 +71,7 @@ fun LearnNavGraph(
             CardDetailScreen(
                 onNavigateCardEdit = { navActions.navigateToCardAddEdit(deckId, cardId) },
                 onNavigateUp = { navController.popBackStack(LearnDestinations.DECK_DETAIL_ROUTE, false) },
-                onNavigateCardDetail = { navActions.navigateToCardDetail(deckId, cardId) },
+                onNavigateCardDetail = { newCardId -> navActions.navigateToCardDetail(deckId, newCardId) },
                 onNavigateDeckDetail = { navActions.navigateToDeckDetail(deckId) }
             )
         }

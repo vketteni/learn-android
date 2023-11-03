@@ -61,7 +61,20 @@ class CardDetailViewModel(
             _isDeleted.value = true
         }
     }
-    suspend fun getIdByCardPosition(position: Int): String = decksRepository.getCardIdsStream(deckId).first()[position]
+    suspend fun getCardIdByCardPosition(position: Int): String = decksRepository.getCardIdsStream(deckId).first()[position]
+
+    suspend fun getAdjacentCardId(forward: Boolean): String {
+        val cardIds = decksRepository.getCardIdsStream(deckId).first()
+        val currentCard = uiState.value
+        val newPosition = if (forward) {
+            if (currentCard.cardPosition >= currentCard.deckLength - 1) 0
+            else currentCard.cardPosition + 1
+        } else {
+            if (currentCard.cardPosition == 0) currentCard.deckLength - 1
+            else currentCard.cardPosition - 1
+        }
+        return cardIds[newPosition]
+    }
 
     fun switchSides() {
         _displayFront.value = !_displayFront.value
