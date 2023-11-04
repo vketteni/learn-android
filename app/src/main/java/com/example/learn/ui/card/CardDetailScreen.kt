@@ -82,8 +82,9 @@ fun CardDetailScreen(
             LearnBottomAppBar {
                 IconButton(onClick = {
                     coroutineScope.launch {
+                        val previousCard = viewModel.getAdjacentCardUiReference(forward = false)
                         onNavigateCardDetail(
-                            viewModel.getAdjacentCardId(forward = false)
+                            previousCard.cardId
                         )
                     }
                 } ) {
@@ -102,8 +103,9 @@ fun CardDetailScreen(
                 }
                 IconButton(onClick = {
                     coroutineScope.launch {
+                        val nextCard = viewModel.getAdjacentCardUiReference(forward = true)
                         onNavigateCardDetail(
-                            viewModel.getAdjacentCardId(forward = true)
+                           nextCard.cardId
                         )
                     }
                 } ) {

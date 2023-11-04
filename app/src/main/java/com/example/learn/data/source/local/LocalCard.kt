@@ -10,5 +10,6 @@ data class LocalCard(
     val frontContent: String,
     val backContent: String,
     val title: String,
+    val position: Int,
     val created: Long = System.currentTimeMillis(),
 )
