@@ -63,4 +63,14 @@ class DeckDetailViewModel(
             decksRepository.deleteDeck(deckId)
         }
     }
+    fun onCardPositionChanged(card: CardUiReference, newPosition: Int) {
+        val currentState = _uiState.value
+        val updatedList = currentState.cardReferences.toMutableList()
+        updatedList.remove(card)
+        updatedList.add(newPosition, card)
+
+        val updatedState = currentState.copy(cardReferences = updatedList)
+        _uiState.value = updatedState
+    }
+
 }
